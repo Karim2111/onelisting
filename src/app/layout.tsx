@@ -17,7 +17,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en"/>
-        <body  className={`${GeistSans.variable}`}>
+      
+        <body  className={`font-sans bold dark`}>
           <TopNav />
           {children}
         </body>

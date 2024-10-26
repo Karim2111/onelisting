@@ -8,8 +8,9 @@ export default  function HomePage() {
       <SignedOut>
         <div className="w-full h-full text-2xl text-center">Please Sign In </div>
       </SignedOut>
-      <SignedIn>
-      </SignedIn>
+
+      
+      
     </main>
   );
 }
