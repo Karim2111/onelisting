@@ -56,6 +56,7 @@ import {
 import { db } from "~/server/db"
 import { listings } from "~/server/db/schema"
 import { auth } from "@clerk/nextjs/server"
+import { UploadButton } from "~/app/utils/uploadthing"
 
 const formSchema = z.object({
   title: z.string().min(8).max(64),
@@ -127,6 +128,22 @@ export default function MyForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
        
+      <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <UploadButton endpoint="imageUploader"/>
+              </FormControl>
+              
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+
         <FormField
           control={form.control}
           name="title"
