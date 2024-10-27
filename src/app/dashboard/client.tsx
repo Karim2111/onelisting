@@ -13,8 +13,22 @@ import {
 import { Button } from "~/components/ui/button";
 import * as z from "zod"
 
+
 interface ClientDashboardProps {
-  listings: any ;
+  listings: {
+    id: number;
+    userId: string | null;
+    title: string;
+    images: unknown;
+    price: number;
+    sku: string | null;
+    condition: string;
+    category: string;
+    description: string;
+    tags: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+}[];
 }
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
@@ -42,22 +56,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
 
       {/* Render listings */}
       <div className="flex justify-center flex-col gap-4 p-4">
-        {listings.map(
-            (values: { id: React.Key;
-                      title: string;
-                      price: string;
-                      sku: string;
-                      condition: string;
-                      category: string;
-                      description: string;
-                    }) => (
-          <div key={values.id} className="flex flex-row gap-2">
-            <div className="text-xl font-semibold">{values.title}</div>
-            <div className="text-lg">${values.price}</div>
-            <div className="text-lg">{values.sku}</div>
-            <div className="text-lg">{values.condition}</div>
-            <div className="text-lg">{values.category}</div>
-            <div className="text-lg">{values.description}</div>
+        {listings.map((listing) => (
+          <div key={listing.id} className="flex flex-row gap-2">
+            <div className="text-xl font-semibold">{listing.title}</div>
+            <div className="text-lg">${listing.price}</div>
+            <div className="text-lg">{listing.sku}</div>
+            <div className="text-lg">{listing.condition}</div>
+            <div className="text-lg">{listing.category}</div>
+            <div className="text-lg">{listing.description}</div>
           </div>
         ))}
       </div>
