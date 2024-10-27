@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import MyForm from "~/components/ui/listing-form";
+import MyForm, { formSchema } from "~/components/ui/listing-form";
 import {
   Dialog,
   DialogContent,
@@ -11,9 +11,10 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
+import * as z from "zod"
 
 interface ClientDashboardProps {
-  listings: any;
+  listings: any ;
 }
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
@@ -41,14 +42,22 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
 
       {/* Render listings */}
       <div className="flex justify-center flex-col gap-4 p-4">
-        {listings.map((listing) => (
-          <div key={listing.id} className="flex flex-row gap-2">
-            <div className="text-xl font-semibold">{listing.title}</div>
-            <div className="text-lg">${listing.price}</div>
-            <div className="text-lg">{listing.sku}</div>
-            <div className="text-lg">{listing.condition}</div>
-            <div className="text-lg">{listing.category}</div>
-            <div className="text-lg">{listing.description}</div>
+        {listings.map(
+            (values: { id: React.Key;
+                      title: string;
+                      price: string;
+                      sku: string;
+                      condition: string;
+                      category: string;
+                      description: string;
+                    }) => (
+          <div key={values.id} className="flex flex-row gap-2">
+            <div className="text-xl font-semibold">{values.title}</div>
+            <div className="text-lg">${values.price}</div>
+            <div className="text-lg">{values.sku}</div>
+            <div className="text-lg">{values.condition}</div>
+            <div className="text-lg">{values.category}</div>
+            <div className="text-lg">{values.description}</div>
           </div>
         ))}
       </div>
