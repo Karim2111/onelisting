@@ -9,6 +9,7 @@ import {
   timestamp,
   varchar,
   json,
+  integer,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -22,23 +23,22 @@ export const createTable = pgTableCreator((name) => `onelisting_${name}`);
 export const listings = createTable(
   "listing",
   {
-    id: serial("id").primaryKey(),
-    userId: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
+    id: serial("id").primaryKey().notNull(),
+    userId: varchar("userId", { length: 256 }),
     title: varchar("title", { length: 64 }).notNull(),
     images: json("images").notNull(),
-    price: varchar("price", { length: 9 }).notNull(),
-    sku: varchar("sku", { length: 64 }).notNull(),
-    category: varchar("category", { length: 64 }).notNull(),
+    price: integer("price").notNull(),
+    sku: varchar("sku", { length: 64 }),
     condition: varchar("condition", { length: 64 }).notNull(),
+    category: varchar("category", { length: 64 }).notNull(),
     description: varchar("description", { length: 61000 }).notNull(),
-    tags: json("tags"),
+    tags: json("tags"), // form collects array of strings
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updatedAt"),
+    updatedAt: timestamp("updatedAt").default(sql`CURRENT_TIMESTAMP`).notNull(),
   },
   (example) => ({
-    nameIndex: index("name_idx").on(example.name),
+    titleIndex: index("name_idx").on(example.title),
   })
 );

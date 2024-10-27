@@ -6,7 +6,7 @@ export default  function HomePage() {
     <main className="">
 
       <SignedOut>
-        <div className="w-full h-full text-2xl text-center">Please Sign In </div>
+        <div className="w-full h-full text-2xl text-center">Please Sign In</div>
       </SignedOut>
 
       

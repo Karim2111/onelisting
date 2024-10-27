@@ -53,13 +53,16 @@ import {
 import {
   TagsInput
 } from "~/components/ui/tags-input"
+import { db } from "~/server/db"
+import { listings } from "~/server/db/schema"
+import { auth } from "@clerk/nextjs/server"
 
 const formSchema = z.object({
-  title: z.string(),
-  price: z.string().min(0).max(1000000),
-  sku: z.string().optional(),
-  Condition: z.string(),
-  Category: z.string(),
+  title: z.string().min(8).max(64),
+  price: z.number().int().nonnegative().lte(999999999),
+  sku: z.string().min(1).max(64).optional(),
+  condition: z.string(),
+  category: z.string(),
   description: z
     .string()
     .min(1, {
@@ -88,8 +91,27 @@ export default function MyForm() {
   })
 
   function onSubmit(values: z.infer < typeof formSchema > ) {
+    
     try {
       console.log(values);
+
+      /* db.insert(listings).values(
+        {userId: "placeholder",
+        title: values.title,
+        images: {
+          "1": "https://utfs.io/f/ybCIypRjWKiDRsscFV9SC1h5QcOI4Ja3WSfrZMdwKxzyEpUm"
+        },
+        price: values.price,
+        sku: values.sku,
+        condition: values.condition,
+        category: values.category,
+        description: values.description,
+        tags: {
+          "1": "Nike",
+          "2": "Air Jordan"
+        }, // form collects array of strings
+        }
+      ) */
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
@@ -137,7 +159,8 @@ export default function MyForm() {
                 placeholder="Price"
                 
                 type="number"
-                {...field} />
+                {...field} 
+                onChange={event => field.onChange(+event.target.value)}/>
               </FormControl>
               
               <FormMessage />
@@ -175,7 +198,7 @@ export default function MyForm() {
             
         <FormField
           control={form.control}
-          name="Condition"
+          name="condition"
           render={({ field }) => (
             <FormItem>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -202,7 +225,7 @@ export default function MyForm() {
             
         <FormField
           control={form.control}
-          name="Category"
+          name="category"
           render={({ field }) => (
             <FormItem>
               <Select onValueChange={field.onChange} defaultValue={field.value}>

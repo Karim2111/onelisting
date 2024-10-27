@@ -45,13 +45,13 @@ export function TopNav() {
           </SignedOut>
           <SignedIn>
             <div className="flex flex-row p-2" >
-              <Link href="/home" passHref>
+              <Link href="/dashboard" passHref>
                 <img src="https://utfs.io/f/ybCIypRjWKiDxSehYiysKGQ7hXMO0EpJTBmb8Wzf1crCH2et"  className="h-12 w-12" />
               </Link>
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <Link href="/home" legacyBehavior passHref>
+                    <Link href="/dashboard" legacyBehavior passHref>
                       <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                         OneListing
                       </NavigationMenuLink>
