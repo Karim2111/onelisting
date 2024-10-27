@@ -55,13 +55,19 @@ import {
 } from "~/components/ui/tags-input"
 
 const formSchema = z.object({
-  photos: z.string(),
   title: z.string(),
-  price: z.number().min(0).max(1000000),
+  price: z.string().min(0).max(1000000),
   sku: z.string().optional(),
   Condition: z.string(),
   Category: z.string(),
-  description: z.string(),
+  description: z
+    .string()
+    .min(1, {
+      message: "Description must be at least 1 character.",
+    })
+    .max(61000, {
+      message: "Description must not be longer than 61000 characters.",
+    }),
   tags: z.array(z.string()).nonempty()
 });
 
@@ -98,62 +104,15 @@ export default function MyForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-        
-            <FormField
-              control={form.control}
-              name="photos"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Photos</FormLabel>
-                  <FormControl>
-                    <FileUploader
-                      value={files}
-                      onValueChange={setFiles}
-                      dropzoneOptions={dropZoneConfig}
-                      className="relative bg-background rounded-lg p-2"
-                    >
-                      <FileInput
-                        id="fileInput"
-                        className="outline-dashed outline-1 outline-slate-500"
-                      >
-                        <div className="flex items-center justify-center flex-col p-8 w-full ">
-                          <CloudUpload className='text-gray-500 w-10 h-10' />
-                          <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">Click to upload</span>
-                            &nbsp; or drag and drop
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            SVG, PNG, JPG or GIF
-                          </p>
-                        </div>
-                      </FileInput>
-                      <FileUploaderContent>
-                        {files &&
-                          files.length > 0 &&
-                          files.map((file, i) => (
-                            <FileUploaderItem key={i} index={i}>
-                              <Paperclip className="h-4 w-4 stroke-current" />
-                              <span>{file.name}</span>
-                            </FileUploaderItem>
-                          ))}
-                      </FileUploaderContent>
-                    </FileUploader>
-                  </FormControl>
-                  <FormDescription>Choose at least 1 image (Max 10)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-        
+       
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input 
-                placeholder="Used Hoodie"
+                placeholder="Title"
                 
                 type="text"
                 {...field} />
@@ -173,10 +132,9 @@ export default function MyForm() {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price $</FormLabel>
               <FormControl>
                 <Input 
-                placeholder="20"
+                placeholder="Price"
                 
                 type="number"
                 {...field} />
@@ -195,10 +153,9 @@ export default function MyForm() {
           name="sku"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>SKU</FormLabel>
               <FormControl>
                 <Input 
-                placeholder=""
+                placeholder="SKU"
                 
                 type="text"
                 {...field} />
@@ -221,17 +178,17 @@ export default function MyForm() {
           name="Condition"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Condition</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Condition" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                <SelectItem value="new">Brand new</SelectItem>
+                  <SelectItem value="like-new">Used (like-new)</SelectItem>
+                  <SelectItem value="good">Used (good)</SelectItem>
+                  <SelectItem value="fair">Used (fair)</SelectItem>
                 </SelectContent>
               </Select>
                 
@@ -248,17 +205,17 @@ export default function MyForm() {
           name="Category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Category" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  <SelectItem value="new">new</SelectItem>
+                  <SelectItem value="like-new">Used (like-new)</SelectItem>
+                  <SelectItem value="good">Used (good)</SelectItem>
+                  <SelectItem value="fair">Used (fair)</SelectItem>
                 </SelectContent>
               </Select>
                 
@@ -275,11 +232,10 @@ export default function MyForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Be as descriptive as possible"
-                  className="resize-none"
+                  placeholder="Description"
+                  className="h-32"
                   {...field}
                 />
               </FormControl>
@@ -294,12 +250,11 @@ export default function MyForm() {
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Listing Tags</FormLabel>
               <FormControl>
                 <TagsInput
                   value={field.value}
                   onValueChange={field.onChange}
-                  placeholder="Enter your tags"
+                  placeholder="Tags"
                 />
               </FormControl>
               

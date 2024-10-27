@@ -30,9 +30,14 @@ Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/ver
 
 
 ##TODO
-
--[]
--[]
+##Create New Listing Form
+-[] Review what is neeeded for eBay
+-[] UploadThing With ShadUI Styling
+-[] Set up Location API to collect Postal code or street address
+-[] Tie Submit button to Drizzle
+-[] Use Ebay API to change category button
+-[] Use lightweight gpt to auto-choose category
+-[] Green success toast after submitting
 
 #download
 @vercel/postgres

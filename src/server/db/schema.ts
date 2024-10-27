@@ -1,13 +1,14 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import {
   index,
   pgTableCreator,
   serial,
   timestamp,
   varchar,
+  json,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -22,7 +23,16 @@ export const posts = createTable(
   "post",
   {
     id: serial("id").primaryKey(),
+    userId: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }),
+    title: varchar("title", { length: 64 }).notNull(),
+    images: json("images").notNull(),
+    price: varchar("price", { length: 9 }).notNull(),
+    sku: varchar("sku", { length: 64 }).notNull(),
+    category: varchar("sku", { length: 64 }).notNull(),
+    condition: varchar("sku", { length: 64 }).notNull(),
+    description: varchar("description", { length: 61000 }).notNull(),
+    tags: json("tags"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
