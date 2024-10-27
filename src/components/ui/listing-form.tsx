@@ -1,63 +1,22 @@
 "use client"
-import {
-  useState
-} from "react"
-import {
-  toast
-} from "sonner"
-import {
-  useForm
-} from "react-hook-form"
-import {
-  zodResolver
-} from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { toast } from "sonner"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import {
-  cn
-} from "~/lib/utils"
-import {
-  Button
-} from "~/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form"
-import {
-  CloudUpload,
-  Paperclip
-} from "lucide-react"
-import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem
-} from "~/components/ui/file-upload"
-import {
-  Input
-} from "~/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
-import {
-  Textarea
-} from "~/components/ui/textarea"
-import {
-  TagsInput
-} from "~/components/ui/tags-input"
-import { db } from "~/server/db"
-import { listings } from "~/server/db/schema"
-import { auth } from "@clerk/nextjs/server"
 
-const formSchema = z.object({
+// UI 
+import {  Button } from "~/components/ui/button"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import { CloudUpload, Paperclip } from "lucide-react";
+import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "~/components/ui/file-upload";
+import { Input } from "~/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Textarea } from "~/components/ui/textarea";
+import { TagsInput } from "~/components/ui/tags-input";
+import { insertListingToDb } from "~/app/dashboard/actions"
+
+export const formSchema = z.object({
   title: z.string().min(8).max(64),
   price: z.number().int().nonnegative().lte(999999999),
   sku: z.string().min(1).max(64).optional(),
@@ -90,28 +49,11 @@ export default function MyForm() {
     },
   })
 
-  function onSubmit(values: z.infer < typeof formSchema > ) {
+  async function onSubmit(values: z.infer < typeof formSchema > ) {
     
     try {
       console.log(values);
-
-      /* db.insert(listings).values(
-        {userId: "placeholder",
-        title: values.title,
-        images: {
-          "1": "https://utfs.io/f/ybCIypRjWKiDRsscFV9SC1h5QcOI4Ja3WSfrZMdwKxzyEpUm"
-        },
-        price: values.price,
-        sku: values.sku,
-        condition: values.condition,
-        category: values.category,
-        description: values.description,
-        tags: {
-          "1": "Nike",
-          "2": "Air Jordan"
-        }, // form collects array of strings
-        }
-      ) */
+      await insertListingToDb(values);
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
