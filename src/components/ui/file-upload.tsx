@@ -179,21 +179,24 @@ export const FileUploader = forwardRef<
 
         onValueChange(newValues);
 
-        if (rejectedFiles.length > 0) {
-          for (let i = 0; i < rejectedFiles.length; i++) {
-            if (typeof rejectedFiles[i] === "undefined") throw new Error("File is null"); 
-            if (rejectedFiles[i].errors[0]?.code === "file-too-large") {
-              toast.error(
-                `File is too large. Max size is ${maxSize / 1024 / 1024}MB`,
-              );
-              break;
-            }
-            if (rejectedFiles[i].errors[0]?.message) {
-              toast.error(rejectedFiles[i].errors[0].message);
-              break;
+        if (rejectedFiles?.length > 0) {
+            for (let i = 0; i < rejectedFiles.length; i++) {
+              const file = rejectedFiles[i];
+              if (!file) throw new Error("File is null");
+          
+              const error = file.errors?.[0];
+              if (error?.code === "file-too-large") {
+                toast.error(`File is too large. Max size is ${maxSize / 1024 / 1024}MB`);
+                break;
+              }
+          
+              if (error?.message) {
+                toast.error(error.message);
+                break;
+              }
             }
           }
-        }
+          
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [reSelectAll, value],

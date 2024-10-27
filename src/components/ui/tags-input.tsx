@@ -197,19 +197,22 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
 
           case "Backspace":
           case "Delete":
-            if (value.length > 0) {
-              if (activeIndex !== -1 && activeIndex < value.length) {
-                RemoveValue(value[activeIndex]);
-                moveCurrent();
-              } else {
-                if (target.selectionStart === 0) {
-                  if (selectedValue === inputValue || isValueSelected) {
-                    RemoveValue(value[value.length - 1]);
+            if (value?.length > 0) {
+                if (activeIndex !== -1 && activeIndex < value.length) {
+                  const currentValue = value[activeIndex];
+                  if (typeof currentValue === 'string') {
+                    RemoveValue(currentValue);
+                    moveCurrent();
+                  }
+                } else if (target?.selectionStart === 0) {
+                  const lastValue = value[value.length - 1];
+                  if ((selectedValue === inputValue || isValueSelected) && typeof lastValue === 'string') {
+                    RemoveValue(lastValue);
                   }
                 }
               }
-            }
-            break;
+              break;
+              
 
           case "Escape":
             const newIndex = activeIndex === -1 ? value.length - 1 : -1;
