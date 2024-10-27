@@ -35,7 +35,11 @@ export const formSchema = z.object({
   tags: z.array(z.string()).nonempty()
 });
 
-export default function MyForm() {
+interface MyFormProps {
+  setOpen: (value: boolean) => void; // Type for setOpen function
+}
+
+export default function MyForm({ setOpen }: MyFormProps ) {
 
   const [files, setFiles] = useState < File[] | null > (null);
 
@@ -56,11 +60,8 @@ export default function MyForm() {
     try {
       console.log(values);
       await insertListingToDb(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      setOpen(false); // Close the dialog
+      toast.success("Listing created Successfully!");
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
