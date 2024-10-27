@@ -19,8 +19,8 @@ import {
  */
 export const createTable = pgTableCreator((name) => `onelisting_${name}`);
 
-export const posts = createTable(
-  "post",
+export const listings = createTable(
+  "listing",
   {
     id: serial("id").primaryKey(),
     userId: serial("id").primaryKey(),
@@ -29,16 +29,14 @@ export const posts = createTable(
     images: json("images").notNull(),
     price: varchar("price", { length: 9 }).notNull(),
     sku: varchar("sku", { length: 64 }).notNull(),
-    category: varchar("sku", { length: 64 }).notNull(),
-    condition: varchar("sku", { length: 64 }).notNull(),
+    category: varchar("category", { length: 64 }).notNull(),
+    condition: varchar("condition", { length: 64 }).notNull(),
     description: varchar("description", { length: 61000 }).notNull(),
     tags: json("tags"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
-    ),
+    updatedAt: timestamp("updatedAt"),
   },
   (example) => ({
     nameIndex: index("name_idx").on(example.name),
