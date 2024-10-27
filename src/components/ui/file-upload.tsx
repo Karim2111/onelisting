@@ -180,8 +180,7 @@ export const FileUploader = forwardRef<
         onValueChange(newValues);
 
         if (rejectedFiles?.length > 0) {
-            for (let i = 0; i < rejectedFiles.length; i++) {
-              const file = rejectedFiles[i];
+            for (const file of rejectedFiles) {
               if (!file) throw new Error("File is null");
           
               const error = file.errors?.[0];
