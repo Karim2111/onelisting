@@ -19,7 +19,7 @@ async function Listings() {
   return (
     <div className="flex justify-center flex-col gap-4 p-4">
     {listings.map((listing) => (
-        <div className="flex flex-row gap-2">
+        <div key={listing.id} className="flex flex-row gap-2">
           <div className="text-xl font-semibold">{listing.title}</div>
           <div className="text-lg">${listing.price}</div>
           <div className="text-lg">{listing.sku}</div>
