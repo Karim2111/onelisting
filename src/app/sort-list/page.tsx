@@ -3,7 +3,7 @@ import { closestCorners, DndContext } from "@dnd-kit/core"
 import React, { useState } from "react";
 import "./App.css"
 import { ImgRow } from "../../components/imgUpload/imgRow/imgRow";
-export default function sortListPage() {
+export default function SortListPage() {
     const [tasks, setTasks] = useState([
         {id: 1, src: "https://placehold.co/40x60?text=1"},
         {id: 2, src: "https://placehold.co/40x60?text=2"},
