@@ -2,10 +2,11 @@ import React from "react";
 import "./imgRow.css";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { Task } from "../Task/Task";
+import { UniqueIdentifier } from "@dnd-kit/core";
 
 // Define the type for a single task
 interface TaskType {
-    id: number;
+    id: UniqueIdentifier;
     src: string;
   }
   
