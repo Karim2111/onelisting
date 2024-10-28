@@ -9,7 +9,7 @@ import * as z from "zod"
 // UI 
 import {  Button } from "~/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { CloudUpload, Paperclip, Router } from "lucide-react";
 import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "~/components/ui/file-upload";
 import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
@@ -17,6 +17,8 @@ import { Textarea } from "~/components/ui/textarea";
 import { TagsInput } from "~/components/ui/tags-input";
 import { insertListingToDb } from "~/app/dashboard/actions"
 import { UploadButton } from "~/app/utils/uploadthing"
+import { revalidatePath } from "next/cache"
+import { useRouter } from "next/navigation"
 
 export const formSchema = z.object({
   title: z.string().min(8).max(64),
@@ -37,36 +39,34 @@ export const formSchema = z.object({
 
 interface MyFormProps {
   setOpen: (value: boolean) => void; // Type for setOpen function
+  onNewListing: (newListing: any) => void;
 }
 
-export default function MyForm({ setOpen }: MyFormProps ) {
-
-  const [files, setFiles] = useState < File[] | null > (null);
-
-  const dropZoneConfig = {
-    maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
-    multiple: true,
-  };
-  const form = useForm < z.infer < typeof formSchema >> ({
+export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      "tags": [""]
-    },
-  })
+    defaultValues: { tags: [""] },
+  });
 
-  async function onSubmit(values: z.infer < typeof formSchema > ) {
-    
+  const router = useRouter();
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      await insertListingToDb(values);
+      const newListing = await insertListingToDb(values); // Get the new listing from the database
+      toast.success("Listing created successfully!");
       setOpen(false); // Close the dialog
-      toast.success("Listing created Successfully!");
+
+      if (onNewListing) {
+        onNewListing(newListing); // Update local state in ClientDashboard
+      }
+
+      router.refresh(); // Refresh the page to update the data from the server
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
     }
-  }
+  };
 
   return (
     <Form {...form}>

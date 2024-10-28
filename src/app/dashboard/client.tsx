@@ -14,8 +14,7 @@ import { Button } from "~/components/ui/button";
 import * as z from "zod"
 
 
-interface ClientDashboardProps {
-  listings: {
+interface Listing {
     id: number;
     userId: string | null;
     title: string;
@@ -28,11 +27,19 @@ interface ClientDashboardProps {
     tags: unknown;
     createdAt: Date;
     updatedAt: Date;
-}[];
-}
+  }
+  
+  interface ClientDashboardProps {
+    listings: Listing[];
+  }
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
   const [open, setOpen] = useState(false);
+  const [localListings, setLocalListings] = useState(listings);
+
+  const handleNewListing = (newListing: Listing) => {
+    setLocalListings((prev) => [newListing, ...prev]); // Add new listing to the top
+  };
 
   return (
     <div>
@@ -47,7 +54,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
             <DialogHeader>
               <DialogTitle>Create Listing</DialogTitle>
               <DialogDescription>
-                <MyForm setOpen={setOpen} />
+                <MyForm setOpen={setOpen} onNewListing={handleNewListing} />
               </DialogDescription>
             </DialogHeader>
           </DialogContent>
@@ -64,6 +71,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
             <div className="text-lg">{listing.condition}</div>
             <div className="text-lg">{listing.category}</div>
             <div className="text-lg">{listing.description}</div>
+
           </div>
         ))}
       </div>
