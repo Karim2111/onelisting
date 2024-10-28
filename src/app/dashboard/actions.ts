@@ -11,7 +11,7 @@ export async function insertListingToDb(formValues: z.infer < typeof formSchema 
         {userId: user.userId,
         title: formValues.title,
         images: {
-          "1": "https://utfs.io/f/ybCIypRjWKiDRsscFV9SC1h5QcOI4Ja3WSfrZMdwKxzyEpUm"
+          "1": ["https://utfs.io/f/ybCIypRjWKiDRsscFV9SC1h5QcOI4Ja3WSfrZMdwKxzyEpUm"]
         },
         price: formValues.price,
         sku: formValues.sku,
@@ -19,8 +19,7 @@ export async function insertListingToDb(formValues: z.infer < typeof formSchema 
         category: formValues.category,
         description: formValues.description,
         tags: {
-          "1": "Nike",
-          "2": "Air Jordan"
+          "1": formValues.tags
         }, // form collects array of strings
         }
       )

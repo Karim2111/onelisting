@@ -18,13 +18,13 @@ interface Listing {
     id: number;
     userId: string | null;
     title: string;
-    images: unknown;
+    images:string[];
     price: number;
     sku: string | null;
     condition: string;
     category: string;
     description: string;
-    tags: unknown;
+    tags: string[] | null;
     createdAt: Date;
     updatedAt: Date;
   }
@@ -32,6 +32,8 @@ interface Listing {
   interface ClientDashboardProps {
     listings: Listing[];
   }
+
+  export type {Listing as myListingType}
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
   const [open, setOpen] = useState(false);
@@ -66,11 +68,15 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
         {listings.map((listing) => (
           <div key={listing.id} className="flex flex-row gap-2">
             <div className="text-xl font-semibold">{listing.title}</div>
+            <div>
+              <img src={listing.images} className="h-24 w-24" />
+            </div>
             <div className="text-lg">${listing.price}</div>
             <div className="text-lg">{listing.sku}</div>
             <div className="text-lg">{listing.condition}</div>
             <div className="text-lg">{listing.category}</div>
             <div className="text-lg">{listing.description}</div>
+            <div className="text-lg">{listing.tags}</div>
 
           </div>
         ))}
