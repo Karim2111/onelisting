@@ -2,7 +2,19 @@ import React from "react";
 import "./imgRow.css";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { Task } from "../Task/Task";
-export const ImgRow = ({tasks}) => {
+
+// Define the type for a single task
+interface TaskType {
+    id: number;
+    src: string;
+  }
+  
+  // Define the type for the props of ImgRow
+  interface ImgRowProps {
+    tasks: TaskType[];
+  }
+
+export const ImgRow: React.FC<ImgRowProps> = ({ tasks }) => {
     return (
         <div className="imgRow">
         <SortableContext items={tasks} strategy={horizontalListSortingStrategy}>
