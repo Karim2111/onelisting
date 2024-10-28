@@ -20,6 +20,7 @@ import { revalidatePath } from "next/cache"
 import { useRouter } from "next/navigation"
 
 export const formSchema = z.object({
+  photos: z.array(z.string().url()),
   title: z.string().min(8).max(64),
   price: z.number().int().nonnegative().lte(999999999),
   sku: z.string().min(1).max(64).optional(),
@@ -88,11 +89,13 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
        
       <FormField
           control={form.control}
-          name="price"
+          name="photos"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <UploadButton endpoint="imageUploader"/>
+                <UploadButton endpoint="imageUploader" 
+                  
+                />
               </FormControl>
               
               <FormMessage />
