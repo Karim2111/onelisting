@@ -1,0 +1,25 @@
+.img-container {
+    width: 70px; /* Set fixed width */
+    height: 60px; /* Set fixed height for 4:3 aspect ratio */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background-color: #ffffff;
+    opacity: 0.95;
+    position: relative; /* Allows img to be positioned within it */
+}
+
+.img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Scales down to fit within container */
+    border-radius: 5px;
+}
+
+.img-container:hover {
+     /* Slightly scales up on hover */
+    border: 3px solid #000000; /* Adds a blue border on hover */
+}
