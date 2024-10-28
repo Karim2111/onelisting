@@ -1,0 +1,10 @@
+.imgRow {
+    background-color: #f2f2f3;
+    border-radius: 5px;
+    padding: 15px;
+    height: 80%;
+    max-height: 100px;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}

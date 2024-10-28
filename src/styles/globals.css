@@ -86,7 +86,6 @@
   border: 1px black solid;
   width: min-content;
   margin: auto;
-  list-style-type: none; /* Remove default bullet points */
 }
 
 .list-item {
@@ -94,6 +93,7 @@
   white-space: nowrap;
   cursor: pointer;
   height: 1.5rem;
+  list-style-type: none; 
 }
 
 .list-item.drop-zone {
@@ -106,6 +106,7 @@
 
 .floating {
   position: absolute;
+
 }
 
 .list-item.drop-zone.hidden {
