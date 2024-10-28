@@ -69,7 +69,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
           <div key={listing.id} className="flex flex-row gap-2">
             <div className="text-xl font-semibold">{listing.title}</div>
             <div>
-              <img src={listing.images} className="h-24 w-24" />
+              <img src={listing.images[0]} className="h-4 w-4" />
             </div>
             <div className="text-lg">${listing.price}</div>
             <div className="text-lg">{listing.sku}</div>

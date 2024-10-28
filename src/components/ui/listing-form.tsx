@@ -1,6 +1,4 @@
 "use client"
-import { useState } from "react"
-import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -8,6 +6,7 @@ import * as z from "zod"
 
 // UI 
 import {  Button } from "~/components/ui/button"
+import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { CloudUpload, Paperclip, Router } from "lucide-react";
 import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "~/components/ui/file-upload";
@@ -48,13 +47,13 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
     defaultValues: { tags: [""] },
   });
 
+  const { toast } = useToast(); // shadcn/ui toast
   const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
       const newListing = await insertListingToDb(values); // Get the new listing from the database
-      toast.success("Listing created successfully!");
       setOpen(false); // Close the dialog
 
       if (onNewListing) {
@@ -62,11 +61,26 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
       }
 
       router.refresh(); // Refresh the page to update the data from the server
+      toast({
+        title: "Success!",
+        description: "Listing created successfully.",
+        duration: 5000,
+        style: {
+          backgroundColor: "limegreen", // Bright green background
+          color: "white", // White text for contrast
+        },
+      });
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to create the listing.",
+        duration: 3000,
+        variant: "destructive",
+      });
     }
   };
+  
 
   return (
     <Form {...form}>

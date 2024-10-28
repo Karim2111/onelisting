@@ -1,9 +1,9 @@
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { TopNav } from "./_components/topnav"
-
+import { TopNav } from "./_components/topnav";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import { Toaster } from "~/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "OneListing",
@@ -16,12 +16,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en"/>
-      
-        <body  className={`font-sans bold dark`}>
+      <html lang="en">
+        <body className="font-sans bold dark">
           <TopNav />
           {children}
+          <Toaster /> {/* Add this to render the toasts */}
         </body>
+      </html>
     </ClerkProvider>
   );
 }
