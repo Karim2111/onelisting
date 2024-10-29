@@ -78,15 +78,14 @@ export default function SortListPage() {
 
     return (
         <div className="App">
-            <h1>My Images!</h1>
-
             {/* Embla Carousel Component */}
             <EmblaCarousel slides={imgs} options={OPTIONS} />
 
             <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+                <ImgRow imgs={imgs} />
                 <form onSubmit={handleSubmit}>
                     <input 
-                        type="text" 
+                        type="text"
                         value={newImgUrl} 
                         onChange={(e) => setNewImgUrl(e.target.value)} 
                         placeholder="Enter image URL" 
@@ -95,7 +94,7 @@ export default function SortListPage() {
                 </form>
 
                 {/* ImgRow Component */}
-                <ImgRow imgs={imgs} />
+                
             </DndContext>
         </div>
     );
