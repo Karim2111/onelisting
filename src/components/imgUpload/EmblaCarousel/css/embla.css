@@ -1,5 +1,5 @@
 .embla {
-  max-width: 48rem;
+  max-width: 40rem;
   margin: auto;
   --slide-height: 19rem;
   --slide-spacing: 1rem;
@@ -40,7 +40,7 @@
   align-items: center;
 }
 .embla__button {
-  -webkit-tap-highlight-color: rgba(var(--text-high-contrast-rgb-value), 0.5);
+  -webkit-tap-highlight-color: (rgb(255, 0, 0), 0.5);
   -webkit-appearance: none;
   appearance: none;
   background-color: transparent;
@@ -56,7 +56,7 @@
   height: 3.6rem;
   z-index: 1;
   border-radius: 50%;
-  color: var(--text-body);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,7 +77,7 @@
   gap: 0.6rem;
 }
 .embla__dot { /*complete circle*/
-  -webkit-tap-highlight-color: rgba(var(--text-high-contrast-rgb-value), 0.5);
+  -webkit-tap-highlight-color: rgba(green, 0.5);
   -webkit-appearance: none;
   appearance: none;
   background-color: transparent;
@@ -94,21 +94,25 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: #ffffff;
+  background-color: #454545;
 }
 .embla__dot:after { /*inner circle*/
   box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
-  width: 1rem;
-  height: 1rem;
+  width: 0.8rem;
+  height: 0.8rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
+  justify-content: center;
   content: '';
-  background-color: #1e00ff;
+  background-color: rgb(0, 0, 0);
+  opacity: 50%;
+  
 }
 .embla__dot--selected:after {
   box-shadow: inset 0 0 0 0.2rem var(--text-body);
-  background-color: #ff00b7;
+  background-color: #ffffff;
+  opacity: 100%;
 }
 .embla__slide {
   transition: opacity 0.2s ease-in-out;

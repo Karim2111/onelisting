@@ -5,15 +5,14 @@ import "./App.css";
 import { ImgRow } from "../../components/imgUpload/imgRow/imgRow";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import ReactDOM from 'react-dom/client'
-import { EmblaOptionsType } from 'embla-carousel'
-import 'src/components/imgUpload/EmblaCarousel/css/sandbox.css'
-import 'src/components/imgUpload/EmblaCarousel/css/embla.css'
-import 'src/components/imgUpload/EmblaCarousel/css/sandbox.css'
+import { EmblaOptionsType } from 'embla-carousel';
+import 'src/components/imgUpload/EmblaCarousel/css/embla.css';
 import EmblaCarousel from "~/components/imgUpload/EmblaCarousel/EmblaCarousel";
+import { Button } from "~/components/ui/button";
+import { Upload } from "lucide-react";
 
 // Embla Carousel setup
 const OPTIONS: EmblaOptionsType = {};
-const SLIDE_COUNT = 24;
 
 // Define the type for a img using UniqueIdentifier
 interface ImgType {
@@ -24,11 +23,9 @@ interface ImgType {
 export type { ImgType };
 
 export default function SortListPage() {
-    const [imgs, setImgs] = useState<ImgType[]>([
-
-    ]);
-
+    const [imgs, setImgs] = useState<ImgType[]>([]);
     const [newImgUrl, setNewImgUrl] = useState<string>('');
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
 
     const addImg = (url: string) => {
         setImgs((imgs) => [
@@ -38,6 +35,15 @@ export default function SortListPage() {
                 src: url,
             },
         ]);
+    }
+
+    const removeCurrentImg = () => {
+        setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
+        setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    };
+
+    const clearImgs = () => {
+        setImgs([]);
     }
 
     const getImgPos = (id: UniqueIdentifier): number => {
@@ -79,11 +85,7 @@ export default function SortListPage() {
     return (
         <div className="App">
             {/* Embla Carousel Component */}
-            <EmblaCarousel slides={imgs} options={OPTIONS} />
-
-            <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-                <ImgRow imgs={imgs} />
-                <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
                     <input 
                         type="text"
                         value={newImgUrl} 
@@ -92,6 +94,46 @@ export default function SortListPage() {
                     />
                     <button type="submit">Add Img</button>
                 </form>
+                <div className="flex flex-row">
+                        <div className="flex flex-col items-center space-y-2 justify-left">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className="w-full max-w-xs"
+                                onClick={() => document.getElementById('file-upload')?.click()}
+                            >
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Images
+                            </Button>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                className="hidden"
+                                aria-label="Upload images"
+                                onChange={(e) => {
+                                // Handle file upload logic here
+                                console.log(e.target.files)
+                                }}
+                            />
+                            <p className="text-sm text-gray-500">Max 24 images</p>
+                        </div>{imgs.length > 0 && (
+                    <>
+                    <div className="flex gap-2 justify-end min-w-[28rem]">
+                        <Button onClick={removeCurrentImg} variant="secondary">
+                            Delete Current Image
+                        </Button>
+                        <Button onClick={() => setImgs([])} variant="secondary">
+                            Clear Images
+                        </Button>
+                    </div></>)}</div>
+                
+            <EmblaCarousel slides={imgs} options={OPTIONS} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />
+
+            <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+                <ImgRow imgs={imgs} />
+                
 
                 {/* ImgRow Component */}
                 

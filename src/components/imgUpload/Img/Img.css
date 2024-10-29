@@ -1,6 +1,6 @@
 .img-container {
-    width: 70px; /* Set fixed width */
-    height: 60px; /* Set fixed height for 4:3 aspect ratio */
+    width: 55px; /* Set fixed width */
+    height: 40px; /* Set fixed height for 4:3 aspect ratio */
     overflow: hidden;
     display: flex;
     align-items: center;

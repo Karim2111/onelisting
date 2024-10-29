@@ -9,14 +9,17 @@ import {
 } from './EmblaCarouselArrowButtons'
 import { DotButton, useDotButton } from './EmblaCarouselDotButton'
 import { ImgType } from '~/app/upload-img/page'
+import { Button } from '~/components/ui/button'
 
 type PropType = {
   slides: ImgType[]
   options?: EmblaOptionsType
+  currentIndex: number; // New prop to track current index
+  setCurrentIndex: (index: number) => void; // New prop to update current index
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options } = props
+  const { slides, options, currentIndex, setCurrentIndex } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [ClassNames()])
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
@@ -28,6 +31,15 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     onPrevButtonClick,
     onNextButtonClick
   } = usePrevNextButtons(emblaApi)
+
+  React.useEffect(() => {
+    if (emblaApi) {
+      emblaApi.on('select', () => {
+        setCurrentIndex(emblaApi.selectedScrollSnap());
+      });
+    }
+  }, [emblaApi, setCurrentIndex]);
+  
   if (slides.length === 0) return null;
 
   return (
