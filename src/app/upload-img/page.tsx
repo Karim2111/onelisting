@@ -25,7 +25,7 @@ export default function UploadUI() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []); // Convert FileList to an array
+    const files = Array.from(e.target.files ?? []); // Convert FileList to an array
     const newImgs: ImgType[] = [];
 
     files.forEach((file) => {
