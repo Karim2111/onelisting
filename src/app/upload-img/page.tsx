@@ -4,6 +4,16 @@ import React, { useState } from "react";
 import "./App.css";
 import { ImgRow } from "../../components/imgUpload/imgRow/imgRow";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import ReactDOM from 'react-dom/client'
+import { EmblaOptionsType } from 'embla-carousel'
+import 'src/components/imgUpload/EmblaCarousel/css/sandbox.css'
+import 'src/components/imgUpload/EmblaCarousel/css/embla.css'
+import 'src/components/imgUpload/EmblaCarousel/css/sandbox.css'
+import EmblaCarousel from "~/components/imgUpload/EmblaCarousel/EmblaCarousel";
+
+// Embla Carousel setup
+const OPTIONS: EmblaOptionsType = {};
+const SLIDE_COUNT = 24;
 
 // Define the type for a img using UniqueIdentifier
 interface ImgType {
@@ -11,9 +21,11 @@ interface ImgType {
     src: string;
 }
 
+export type { ImgType };
+
 export default function SortListPage() {
     const [imgs, setImgs] = useState<ImgType[]>([
-        { id: 1, src: "https://placehold.co/80x70?text=1" },
+
     ]);
 
     const [newImgUrl, setNewImgUrl] = useState<string>('');
@@ -67,8 +79,12 @@ export default function SortListPage() {
     return (
         <div className="App">
             <h1>My Images!</h1>
+
+            {/* Embla Carousel Component */}
+            <EmblaCarousel slides={imgs} options={OPTIONS} />
+
             <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-            <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                     <input 
                         type="text" 
                         value={newImgUrl} 
@@ -77,6 +93,8 @@ export default function SortListPage() {
                     />
                     <button type="submit">Add Img</button>
                 </form>
+
+                {/* ImgRow Component */}
                 <ImgRow imgs={imgs} />
             </DndContext>
         </div>
