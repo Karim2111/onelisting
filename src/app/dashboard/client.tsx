@@ -10,8 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import * as z from "zod"
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 
 interface Listing {
@@ -44,24 +46,15 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
   };
 
   return (
-    <div>
-      <div className="flex justify-center p-8">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" onClick={() => setOpen(true)}>
-              Create Listing
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create Listing</DialogTitle>
-              <DialogDescription>
-                <MyForm setOpen={setOpen} onNewListing={handleNewListing} />
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
+    <div >
+      <Button asChild>
+      <Button asChild>
+        <Link href="/create-listing">
+          <Plus />Create Listing
+        </Link>
+      </Button>
+
+      </Button>
 
       {/* Render listings */}
       <div className="flex justify-center flex-col gap-4 p-4">

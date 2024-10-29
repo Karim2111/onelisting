@@ -8,17 +8,13 @@ import * as z from "zod"
 import {  Button } from "~/components/ui/button"
 import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { CloudUpload, Paperclip, Router } from "lucide-react";
-import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "~/components/ui/file-upload";
 import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { TagsInput } from "~/components/ui/tags-input";
 import { insertListingToDb } from "~/app/dashboard/actions"
-import { UploadButton } from "~/app/utils/uploadthing"
-import { revalidatePath } from "next/cache"
 import { useRouter } from "next/navigation"
-import SortListPage from "~/app/upload-img/page"
+import UploadUI from "~/app/upload-img/page"
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
@@ -35,18 +31,14 @@ export const formSchema = z.object({
     .max(61000, {
       message: "Description must not be longer than 61000 characters.",
     }),
-  tags: z.array(z.string()).nonempty()
+  tags: z.array(z.string())
 });
 
-interface MyFormProps {
-  setOpen: (value: boolean) => void; // Type for setOpen function
-  onNewListing: (newListing: any) => void;
-}
 
-export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
+export default function MyForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { tags: [""] },
+    defaultValues: { tags: [] , photos: ["https://placehold.co/300x400/blue/white"]},
   });
 
   const { toast } = useToast(); // shadcn/ui toast
@@ -55,14 +47,8 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      const newListing = await insertListingToDb(values); // Get the new listing from the database
-      setOpen(false); // Close the dialog
+      await insertListingToDb(values); // Get the new listing from the database
 
-      if (onNewListing) {
-        onNewListing(newListing); // Update local state in ClientDashboard
-      }
-
-      router.refresh(); // Refresh the page to update the data from the server
       toast({
         title: "Success!",
         description: "Listing created successfully.",
@@ -72,6 +58,8 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
           color: "white", // White text for contrast
         },
       });
+
+      router.push("/dashboard");
     } catch (error) {
       console.error("Form submission error", error);
       toast({
@@ -85,6 +73,7 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
   
 
   return (
+    <div className="w-[42rem] overflow-auto max-h-[100%] ">
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
        
@@ -95,7 +84,7 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
             <FormItem>
               <FormControl>
                 
-                <SortListPage />
+                <UploadUI />
               </FormControl>
               
               <FormMessage />
@@ -266,5 +255,6 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
         <Button type="submit">Submit</Button>
       </form>
     </Form>
+    </div>
   )
 }

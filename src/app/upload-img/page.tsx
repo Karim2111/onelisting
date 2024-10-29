@@ -1,16 +1,14 @@
 'use client';
 import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
 import React, { useState } from "react";
-import "./App.css";
+import "./Upload-UI.css";
 import { ImgRow } from "../../components/imgUpload/imgRow/imgRow";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import ReactDOM from 'react-dom/client'
 import { EmblaOptionsType } from 'embla-carousel';
 import 'src/components/imgUpload/EmblaCarousel/css/embla.css';
 import EmblaCarousel from "~/components/imgUpload/EmblaCarousel/EmblaCarousel";
 import { Button } from "~/components/ui/button";
 import { Upload } from "lucide-react";
-import { add } from "@dnd-kit/utilities";
 
 // Embla Carousel setup
 const OPTIONS: EmblaOptionsType = {};
@@ -23,7 +21,7 @@ interface ImgType {
 
 export type { ImgType };
 
-export default function SortListPage() {
+export default function UploadUI() {
     const [imgs, setImgs] = useState<ImgType[]>([]);
     const [newImgUrl, setNewImgUrl] = useState<string>('');
     const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -61,10 +59,6 @@ export default function SortListPage() {
         setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
     };
 
-    const clearImgs = () => {
-        setImgs([]);
-    }
-
     const getImgPos = (id: UniqueIdentifier): number => {
         return imgs.findIndex((img: ImgType) => img.id === id);
     };
@@ -92,34 +86,19 @@ export default function SortListPage() {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
-    
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        if (newImgUrl.trim()) {
-            addImg(newImgUrl);
-            setNewImgUrl('');
-        }
-    };
 
     return (
-        <div className="App">
+        <div className="Upload-UI">
             {/* Embla Carousel Component */}
-            <form onSubmit={handleSubmit}>
-                    <input 
-                        type="text"
-                        value={newImgUrl} 
-                        onChange={(e) => setNewImgUrl(e.target.value)} 
-                        placeholder="Enter image URL" 
-                    />
-                    <button type="submit">Add Img</button>
-                </form>
                 <div className="flex flex-row">
                         <div className="flex flex-col items-center space-y-2 justify-left">
                             <Button
                                 variant="outline"
                                 size="lg"
                                 className="w-full max-w-xs"
-                                onClick={() => document.getElementById('file-upload')?.click()}
+                                onClick={(e) => {e.preventDefault(); // Prevents form validation messages
+                                    document.getElementById('file-upload')?.click()}
+                                }
                             >
                                 <Upload className="mr-2 h-4 w-4" />
                                 Upload Images
@@ -140,8 +119,8 @@ export default function SortListPage() {
                         <Button onClick={removeCurrentImg} variant="secondary">
                             Delete Current Image
                         </Button>
-                        <Button onClick={() => setImgs([])} variant="secondary">
-                            Clear Images
+                        <Button onClick={() => setImgs([])} variant="destructive">
+                            Delete All Images
                         </Button>
                     </div></>)}</div>
                 
