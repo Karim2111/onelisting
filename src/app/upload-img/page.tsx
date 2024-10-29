@@ -10,6 +10,7 @@ import 'src/components/imgUpload/EmblaCarousel/css/embla.css';
 import EmblaCarousel from "~/components/imgUpload/EmblaCarousel/EmblaCarousel";
 import { Button } from "~/components/ui/button";
 import { Upload } from "lucide-react";
+import { add } from "@dnd-kit/utilities";
 
 // Embla Carousel setup
 const OPTIONS: EmblaOptionsType = {};
@@ -26,6 +27,31 @@ export default function SortListPage() {
     const [imgs, setImgs] = useState<ImgType[]>([]);
     const [newImgUrl, setNewImgUrl] = useState<string>('');
     const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [file, setFile] = useState<File | undefined>(undefined)
+    const [fileUrl, setPreviewUrl] = useState<string | undefined>(undefined)
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        console.log("1")
+        setFile(file)
+        console.log("2")
+        if (fileUrl) {
+            console.log("3")
+            URL.revokeObjectURL(fileUrl)
+        }
+        if (file) {
+            console.log("4")
+            const url = URL.createObjectURL(file)
+            console.log(url)+"-- url"
+            console.log(imgs+"-- imgs1")
+            addImg(url);
+            console.log(imgs+"-- imgs2")
+
+        } else {
+            console.log("5")
+            setPreviewUrl(undefined)
+        }
+    } 
 
     const addImg = (url: string) => {
         setImgs((imgs) => [
@@ -112,10 +138,7 @@ export default function SortListPage() {
                                 accept="image/*"
                                 className="hidden"
                                 aria-label="Upload images"
-                                onChange={(e) => {
-                                // Handle file upload logic here
-                                console.log(e.target.files)
-                                }}
+                                onChange={(e) => {handleFileChange(e)}}
                             />
                             <p className="text-sm text-gray-500">Max 24 images</p>
                         </div>{imgs.length > 0 && (

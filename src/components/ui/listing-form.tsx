@@ -18,6 +18,7 @@ import { insertListingToDb } from "~/app/dashboard/actions"
 import { UploadButton } from "~/app/utils/uploadthing"
 import { revalidatePath } from "next/cache"
 import { useRouter } from "next/navigation"
+import SortListPage from "~/app/upload-img/page"
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
@@ -93,9 +94,8 @@ export default function MyForm({ setOpen, onNewListing }: MyFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <UploadButton endpoint="imageUploader" 
-                  
-                />
+                
+                <SortListPage />
               </FormControl>
               
               <FormMessage />
