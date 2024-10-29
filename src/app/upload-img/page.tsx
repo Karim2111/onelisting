@@ -32,20 +32,13 @@ export default function SortListPage() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
-        console.log("1")
         setFile(file)
-        console.log("2")
         if (fileUrl) {
-            console.log("3")
             URL.revokeObjectURL(fileUrl)
         }
         if (file) {
-            console.log("4")
             const url = URL.createObjectURL(file)
-            console.log(url)+"-- url"
-            console.log(imgs+"-- imgs1")
             addImg(url);
-            console.log(imgs+"-- imgs2")
 
         } else {
             console.log("5")
