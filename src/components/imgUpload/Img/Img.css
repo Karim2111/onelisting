@@ -1,5 +1,5 @@
 .img-container {
-    width: 55px; /* Set fixed width */
+    width: 3.04rem; /* Set fixed width */
     height: 40px; /* Set fixed height for 4:3 aspect ratio */
     overflow: hidden;
     display: flex;
