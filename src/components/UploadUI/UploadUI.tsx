@@ -1,4 +1,5 @@
 "use client";
+
 import {
   closestCorners,
   DndContext,
@@ -23,6 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import { generateReactHelpers } from "@uploadthing/react";
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
+// UploadThing React helpers
 export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
 const OPTIONS: EmblaOptionsType = { loop: false };
@@ -37,6 +39,13 @@ export interface ImgType {
 
 type UploadedImage = { url: string; fileKey: string };
 
+// Custom type for uploaded file data
+type CustomUploadedFileData = {
+  url: string;
+  key: string;
+  uploadedBy?: string | null;
+};
+
 type UploadUIProps = {
   onUploaded?: (uploadedImages: UploadedImage[]) => void;
 };
@@ -46,47 +55,48 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
-    onClientUploadComplete: (uploadedFiles) => {
+    onClientUploadComplete: (uploadedFiles: CustomUploadedFileData[]) => {
       if (!uploadedFiles) {
         console.error("Upload failed: No files returned");
         return;
       }
 
+      // Transform CustomUploadedFileData to UploadedImage
+      const transformedFiles: UploadedImage[] = uploadedFiles.map((file) => ({
+        url: file.url,
+        fileKey: file.key,
+      }));
+
       setImgs((prevImgs) => {
         let index = 0;
         const updatedImgs = prevImgs.map((img) => {
-          if (img.uploadedUrl === null && index < uploadedFiles.length) {
-            const uploadedFile = uploadedFiles[index];
+          if (img.uploadedUrl === null && index < transformedFiles.length) {
+            const uploadedFile = transformedFiles[index];
             index++;
             if (uploadedFile) {
               return {
                 ...img,
                 uploadedUrl: uploadedFile.url,
-                fileKey: uploadedFile.key,
+                fileKey: uploadedFile.fileKey,
               };
             }
           }
           return img;
         });
 
-        // Collect all uploaded images with URLs and fileKeys
-        const uploadedImages = updatedImgs
-        .filter((img) => img.uploadedUrl !== null && img.fileKey !== null)
-        .map((img) => ({
-          url: img.uploadedUrl!,
-          fileKey: img.fileKey!,
-        }));
-
-
         if (onUploaded) {
-          onUploaded(uploadedImages);
+          onUploaded(transformedFiles);
         }
 
         return updatedImgs;
       });
     },
-    onUploadError: (error) => {
-      console.error("Upload error:", error);
+    onUploadError: (error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Upload error:", error.message);
+      } else {
+        console.error("Unknown error occurred during upload.");
+      }
     },
   });
 
@@ -113,11 +123,13 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
     setImgs((prevImgs) => [...prevImgs, ...newImgs]);
 
-    // Start the upload
-    startUpload(newImgs.map((img) => img.file)).catch((error) => {
-      console.error("Upload error:", error);
+    startUpload(newImgs.map((img) => img.file)).catch((error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Upload error:", error.message);
+      } else {
+        console.error("Unknown error occurred during upload.");
+      }
     });
-    
 
     e.target.value = "";
   };
@@ -128,7 +140,6 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
       URL.revokeObjectURL(imgToRemove.src);
 
       if (imgToRemove.fileKey) {
-        // Call API route to delete the file
         try {
           const response = await fetch('/api/delete-uploadthing-file', {
             method: 'POST',
@@ -136,7 +147,8 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             body: JSON.stringify({ fileKey: imgToRemove.fileKey }),
           });
 
-          const data = await response.json();
+          const data: { error?: string; success?: boolean } = await response.json();
+
           if (!response.ok) {
             console.error('Failed to delete file:', data.error);
           } else {
@@ -145,9 +157,10 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
         } catch (error: unknown) {
           if (error instanceof Error) {
             console.error("Error deleting file:", error.message);
+          } else {
+            console.error("Unknown error occurred while deleting the file.");
           }
         }
-      
       }
 
       setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
@@ -225,14 +238,19 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ fileKeys: fileKeysToDelete }),
                     });
-                    const data = await response.json();
+                    const data: { error?: string; success?: boolean } = await response.json();
+
                     if (!response.ok) {
                       console.error('Failed to delete files:', data.error);
                     } else {
                       console.log('Files deleted successfully');
                     }
-                  } catch (error) {
-                    console.error('Error deleting files:', error);
+                  } catch (error: unknown) {
+                    if (error instanceof Error) {
+                      console.error("Error deleting files:", error.message);
+                    } else {
+                      console.error("Unknown error occurred while deleting the files.");
+                    }
                   }
                 }
 
