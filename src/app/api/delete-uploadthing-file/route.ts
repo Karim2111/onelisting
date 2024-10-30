@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import { UTApi } from 'uploadthing/server';
 
-type RequestBody = {
-  fileKeys: unknown;
-};
-
 function isRequestBody(body: unknown): body is { fileKeys: string[] } {
   if (typeof body !== 'object' || body === null) {
     return false;
@@ -14,7 +10,8 @@ function isRequestBody(body: unknown): body is { fileKeys: string[] } {
     return false;
   }
 
-  const maybeBody = body as RequestBody;
+  // We can now safely assert that body has a 'fileKeys' property
+  const maybeBody = body as { fileKeys: unknown };
 
   if (!Array.isArray(maybeBody.fileKeys)) {
     return false;
@@ -29,7 +26,7 @@ function isRequestBody(body: unknown): body is { fileKeys: string[] } {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body: unknown = await request.json();
 
     if (!isRequestBody(body)) {
       return NextResponse.json(
@@ -38,6 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // After the type guard, TypeScript knows that 'body' is '{ fileKeys: string[] }'
     const { fileKeys } = body;
 
     const utapi = new UTApi();
