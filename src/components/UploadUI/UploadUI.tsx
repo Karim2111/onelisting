@@ -10,7 +10,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./Upload-UI.css";
 import { ImgRow } from "../imgUpload/imgRow/imgRow";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
@@ -24,9 +24,7 @@ import { generateReactHelpers } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
-export const { useUploadThing, uploadFiles } =
-  generateReactHelpers<OurFileRouter>();
-
+export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
@@ -35,6 +33,7 @@ export interface ImgType {
   src: string;
   file: File;
   uploadedUrl: string | null;
+  uploadedKey: string | null; // Added uploadedKey
 }
 
 type UploadUIProps = {
@@ -47,34 +46,39 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (uploadedFiles) => {
-        if (!uploadedFiles) {
-          console.error("Upload failed: No files returned");
-          return;
-        }
-        setImgs((prevImgs) => {
-          let index = 0;
-          const updatedImgs = prevImgs.map((img) => {
-            if (img.uploadedUrl === null && index < uploadedFiles.length) {
-                const uploadedFile = uploadedFiles[index];
-                index++;
-                if (uploadedFile) {
-                  return { ...img, uploadedUrl: uploadedFile.url };
-                }
-            }              
-            return img;
-          });
-      
-          const uploadedUrls = updatedImgs
-            .map((img) => img.uploadedUrl)
-            .filter((url): url is string => url !== null);
-      
-          if (onUploaded) {
-            onUploaded(uploadedUrls);
+      if (!uploadedFiles) {
+        console.error("Upload failed: No files returned");
+        return;
+      }
+
+      setImgs((prevImgs) => {
+        let index = 0;
+        const updatedImgs = prevImgs.map((img) => {
+          if (img.uploadedUrl === null && index < uploadedFiles.length) {
+            const uploadedFile = uploadedFiles[index];
+            index++;
+            if (uploadedFile) {
+              return {
+                ...img,
+                uploadedUrl: uploadedFile.url,
+                uploadedKey: uploadedFile.key, // Store the uploadedKey
+              };
+            }
           }
-      
-          return updatedImgs;
+          return img;
         });
-      },
+
+        const uploadedUrls = updatedImgs
+          .map((img) => img.uploadedUrl)
+          .filter((url): url is string => url !== null);
+
+        if (onUploaded) {
+          onUploaded(uploadedUrls);
+        }
+
+        return updatedImgs;
+      });
+    },
     onUploadError: (error) => {
       console.error("Upload error:", error);
     },
@@ -94,6 +98,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           src: newUrl,
           file: file,
           uploadedUrl: null,
+          uploadedKey: null, // Initialize uploadedKey as null
         });
       } else {
         URL.revokeObjectURL(newUrl);
@@ -108,9 +113,31 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     e.target.value = "";
   };
 
+  const deleteUploadedFiles = async (fileKeys: string[]) => {
+    try {
+      const response = await fetch('/api/delete-uploadthing-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileKeys }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error('Error deleting files:', data.error);
+      }
+    } catch (error) {
+      console.error('Error deleting files:', error);
+    }
+  };
+
   const removeCurrentImg = () => {
     const imgToRemove = imgs[currentIndex];
-    if (imgToRemove) URL.revokeObjectURL(imgToRemove.src);
+    if (imgToRemove) {
+      URL.revokeObjectURL(imgToRemove.src);
+      if (imgToRemove.uploadedKey) {
+        deleteUploadedFiles([imgToRemove.uploadedKey]);
+      }
+    }
 
     setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
     setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
@@ -174,6 +201,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
               type="button"
               onClick={() => {
                 imgs.forEach((img) => URL.revokeObjectURL(img.src));
+                const uploadedKeys = imgs
+                  .map((img) => img.uploadedKey)
+                  .filter((key): key is string => key !== null);
+                if (uploadedKeys.length > 0) {
+                  deleteUploadedFiles(uploadedKeys);
+                }
                 setImgs([]);
               }}
               variant="destructive"
