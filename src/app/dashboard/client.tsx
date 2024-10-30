@@ -61,8 +61,8 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
         {listings.map((listing) => (
           <div key={listing.id} className="flex flex-row gap-2">
             <div className="text-xl font-semibold">{listing.title}</div>
-            {listing.images.map((image) => (
-              <img src={image} className="h-4 w-4"  />
+            {listing.images.map((image, index) => (
+              <img src={image} key={index} className="h-4 w-4"  />
             ))}
             <div className="text-lg">${listing.price}</div>
             <div className="text-lg">{listing.sku}</div>

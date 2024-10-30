@@ -1,4 +1,5 @@
 "use client";
+
 import {
   closestCorners,
   DndContext,
@@ -21,7 +22,6 @@ import { Button } from "~/components/ui/button";
 import { Upload } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { generateReactHelpers } from "@uploadthing/react";
-
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
 export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
@@ -36,8 +36,10 @@ export interface ImgType {
   uploadedKey: string | null; // Added uploadedKey
 }
 
+type UploadedImage = { url: string; fileKey: string };
+
 type UploadUIProps = {
-  onUploaded?: (urls: string[]) => void;
+  onUploaded?: (uploadedImages: UploadedImage[]) => void;
 };
 
 export default function UploadUI({ onUploaded }: UploadUIProps) {
@@ -107,8 +109,13 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
     setImgs((prevImgs) => [...prevImgs, ...newImgs]);
 
-    // Start the upload
-    startUpload(newImgs.map((img) => img.file));
+    startUpload(newImgs.map((img) => img.file)).catch((error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Upload error:", error.message);
+      } else {
+        console.error("Unknown error occurred during upload.");
+      }
+    });
 
     e.target.value = "";
   };
@@ -139,8 +146,33 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
       }
     }
 
-    setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+      if (imgToRemove.fileKey) {
+        try {
+          const response = await fetch("/api/delete-uploadthing-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileKey: imgToRemove.fileKey }),
+          });
+
+          const data = (await response.json()) as { error?: string; success?: boolean };
+
+          if (!response.ok) {
+            console.error("Failed to delete file:", data.error);
+          } else {
+            console.log("File deleted successfully");
+          }
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error("Error deleting file:", error.message);
+          } else {
+            console.error("Unknown error occurred while deleting the file.");
+          }
+        }
+      }
+
+      setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
+      setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -190,16 +222,16 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
         </div>
         {imgs.length > 0 && (
           <div className="flex gap-2 justify-end min-w-[28rem]">
-            <Button
-              type="button"
-              onClick={removeCurrentImg}
-              variant="secondary"
-            >
+            <Button type="button" onClick={removeCurrentImg} variant="secondary">
               Delete Current Image
             </Button>
             <Button
               type="button"
-              onClick={() => {
+              onClick={async () => {
+                const fileKeysToDelete = imgs
+                  .filter((img) => img.fileKey)
+                  .map((img) => img.fileKey!); // Use non-null assertion
+
                 imgs.forEach((img) => URL.revokeObjectURL(img.src));
                 const uploadedKeys = imgs
                   .map((img) => img.uploadedKey)
