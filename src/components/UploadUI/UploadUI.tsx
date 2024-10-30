@@ -71,11 +71,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
         // Collect all uploaded images with URLs and fileKeys
         const uploadedImages = updatedImgs
-          .filter((img) => img.uploadedUrl !== null && img.fileKey !== null)
-          .map((img) => ({
-            url: img.uploadedUrl as string,
-            fileKey: img.fileKey as string,
-          }));
+        .filter((img) => img.uploadedUrl !== null && img.fileKey !== null)
+        .map((img) => ({
+          url: img.uploadedUrl!,
+          fileKey: img.fileKey!,
+        }));
+
 
         if (onUploaded) {
           onUploaded(uploadedImages);
@@ -113,7 +114,10 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     setImgs((prevImgs) => [...prevImgs, ...newImgs]);
 
     // Start the upload
-    startUpload(newImgs.map((img) => img.file));
+    startUpload(newImgs.map((img) => img.file)).catch((error) => {
+      console.error("Upload error:", error);
+    });
+    
 
     e.target.value = "";
   };
@@ -138,9 +142,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           } else {
             console.log('File deleted successfully');
           }
-        } catch (error) {
-          console.error('Error deleting file:', error);
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error("Error deleting file:", error.message);
+          }
         }
+      
       }
 
       setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
