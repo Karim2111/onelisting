@@ -11,11 +11,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
-import { TagsInput } from "~/components/ui/tags-input";
-import { insertListingToDb } from "~/app/dashboard/actions"
-import { useRouter } from "next/navigation"
-import UploadUI from "~/components/UploadUI/UploadUI"
-import TagsField from "~/app/tags/tags-component"
+import { insertListingToDb } from "~/app/dashboard/actions";
+import { useRouter } from "next/navigation";
+import UploadUI from "~/components/UploadUI/UploadUI";
+import TagsField from "~/components/ui/tags-component";
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
