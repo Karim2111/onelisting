@@ -121,9 +121,10 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
         body: JSON.stringify({ fileKeys }),
       });
 
-      const data: { success?: boolean; error?: string } = await response.json();
+      const data = (await response.json()) as { success?: boolean; error?: string };
+
       if (!response.ok) {
-        console.error('Error deleting files:', data.error);
+        console.error('Error deleting files:', data.error ?? 'Unknown error');
       }
     } catch (error) {
       console.error('Error deleting files:', error);
