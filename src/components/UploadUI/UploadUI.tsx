@@ -39,13 +39,6 @@ export interface ImgType {
 
 type UploadedImage = { url: string; fileKey: string };
 
-// Custom type for uploaded file data
-type CustomUploadedFileData = {
-  url: string;
-  key: string;
-  uploadedBy?: string | null;
-};
-
 type UploadUIProps = {
   onUploaded?: (uploadedImages: UploadedImage[]) => void;
 };
@@ -55,13 +48,13 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
-    onClientUploadComplete: (uploadedFiles: CustomUploadedFileData[]) => {
+    onClientUploadComplete: (uploadedFiles) => {
       if (!uploadedFiles) {
         console.error("Upload failed: No files returned");
         return;
       }
 
-      // Transform CustomUploadedFileData to UploadedImage
+      // Transform uploadedFiles to UploadedImage[]
       const transformedFiles: UploadedImage[] = uploadedFiles.map((file) => ({
         url: file.url,
         fileKey: file.key,
@@ -141,18 +134,18 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
       if (imgToRemove.fileKey) {
         try {
-          const response = await fetch('/api/delete-uploadthing-file', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          const response = await fetch("/api/delete-uploadthing-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fileKey: imgToRemove.fileKey }),
           });
 
-          const data: { error?: string; success?: boolean } = await response.json();
+          const data = (await response.json()) as { error?: string; success?: boolean };
 
           if (!response.ok) {
-            console.error('Failed to delete file:', data.error);
+            console.error("Failed to delete file:", data.error);
           } else {
-            console.log('File deleted successfully');
+            console.log("File deleted successfully");
           }
         } catch (error: unknown) {
           if (error instanceof Error) {
@@ -215,11 +208,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
         </div>
         {imgs.length > 0 && (
           <div className="flex gap-2 justify-end min-w-[28rem]">
-            <Button
-              type="button"
-              onClick={removeCurrentImg}
-              variant="secondary"
-            >
+            <Button type="button" onClick={removeCurrentImg} variant="secondary">
               Delete Current Image
             </Button>
             <Button
@@ -227,23 +216,23 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
               onClick={async () => {
                 const fileKeysToDelete = imgs
                   .filter((img) => img.fileKey)
-                  .map((img) => img.fileKey as string);
+                  .map((img) => img.fileKey!); // Use non-null assertion
 
                 imgs.forEach((img) => URL.revokeObjectURL(img.src));
 
                 if (fileKeysToDelete.length > 0) {
                   try {
-                    const response = await fetch('/api/delete-uploadthing-file', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
+                    const response = await fetch("/api/delete-uploadthing-file", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ fileKeys: fileKeysToDelete }),
                     });
-                    const data: { error?: string; success?: boolean } = await response.json();
+                    const data = (await response.json()) as { error?: string; success?: boolean };
 
                     if (!response.ok) {
-                      console.error('Failed to delete files:', data.error);
+                      console.error("Failed to delete files:", data.error);
                     } else {
-                      console.log('Files deleted successfully');
+                      console.log("Files deleted successfully");
                     }
                   } catch (error: unknown) {
                     if (error instanceof Error) {
