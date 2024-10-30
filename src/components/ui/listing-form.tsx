@@ -14,7 +14,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { TagsInput } from "~/components/ui/tags-input";
 import { insertListingToDb } from "~/app/dashboard/actions"
 import { useRouter } from "next/navigation"
-import UploadUI from "~/app/upload-img/page"
+import UploadUI from "~/components/UploadUI/UploadUI"
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
@@ -38,7 +38,7 @@ export const formSchema = z.object({
 export default function MyForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { tags: [] , photos: ["https://placehold.co/300x400/blue/white"]},
+    defaultValues: { tags: [] },
   });
 
   const { toast } = useToast(); // shadcn/ui toast
@@ -77,20 +77,19 @@ export default function MyForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
        
-      <FormField
-          control={form.control}
-          name="photos"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                
-                <UploadUI />
-              </FormControl>
-              
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+        control={form.control}
+        name="photos"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <UploadUI onUploaded={(urls) => field.onChange(urls)} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
 
 
 

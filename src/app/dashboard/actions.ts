@@ -11,7 +11,7 @@ export async function insertListingToDb(formValues: z.infer < typeof formSchema 
         {userId: user.userId,
         title: formValues.title,
         images: {
-          "1": ["https://utfs.io/f/ybCIypRjWKiDRsscFV9SC1h5QcOI4Ja3WSfrZMdwKxzyEpUm"]
+          "1": formValues.photos
         },
         price: formValues.price,
         sku: formValues.sku,
