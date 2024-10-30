@@ -15,6 +15,7 @@ import { TagsInput } from "~/components/ui/tags-input";
 import { insertListingToDb } from "~/app/dashboard/actions"
 import { useRouter } from "next/navigation"
 import UploadUI from "~/components/UploadUI/UploadUI"
+import TagsField from "~/app/tags/tags-component"
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
@@ -233,20 +234,19 @@ export default function MyForm() {
             </FormItem>
           )}
         />
-        
         <FormField
           control={form.control}
           name="tags"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <TagsInput
+                <TagsField
+                  maxTags={10} // Set the maximum number of tags as needed
                   value={field.value}
-                  onValueChange={field.onChange}
-                  placeholder="Tags"
+                  onChange={field.onChange}
+                  placeholder="Add Tags"
                 />
               </FormControl>
-              
               <FormMessage />
             </FormItem>
           )}

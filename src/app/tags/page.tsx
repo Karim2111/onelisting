@@ -1,0 +1,27 @@
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { getmyListings } from "~/server/queries";
+import TagsField from "./tags-component";
+export const dynamic = "force-dynamic";
+
+export default async function DashboardPage() {
+  // Fetch listings data on the server side
+  const listings = await getmyListings();
+
+
+  return (
+    <main>
+      <SignedOut>
+        <div className="w-full h-full text-2xl text-center">Please Sign In</div>
+      </SignedOut>
+      <SignedIn>
+        {/* Pass the listings to the client-side component */}
+        <TagsField
+                  maxTags={10} // Set the maximum number of tags as needed
+                  value={VALUE}
+                  onChange={field.onChange}
+                  placeholder="Add Tags"
+                />
+      </SignedIn>
+    </main>
+  );
+}
