@@ -1,14 +1,20 @@
-// /app/api/delete-uploadthing-file/route.ts
 import { NextResponse } from 'next/server';
 import { UTApi } from 'uploadthing/server';
 
 export async function POST(request: Request) {
   try {
-    const { fileKeys } = await request.json();
+    const body: unknown = await request.json();
 
-    if (!fileKeys || !Array.isArray(fileKeys)) {
+    if (
+      typeof body !== 'object' ||
+      body === null ||
+      !('fileKeys' in body) ||
+      !Array.isArray((body as any).fileKeys)
+    ) {
       return NextResponse.json({ error: 'No fileKey(s) provided' }, { status: 400 });
     }
+
+    const { fileKeys } = body as { fileKeys: string[] };
 
     const utapi = new UTApi();
     await utapi.deleteFiles(fileKeys);

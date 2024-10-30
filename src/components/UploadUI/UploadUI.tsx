@@ -84,8 +84,8 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []) as File[];
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
     const newImgs: ImgType[] = [];
 
     files.forEach((file) => {
@@ -108,7 +108,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     setImgs((prevImgs) => [...prevImgs, ...newImgs]);
 
     // Start the upload
-    startUpload(newImgs.map((img) => img.file));
+    await startUpload(newImgs.map((img) => img.file));
 
     e.target.value = "";
   };
@@ -121,7 +121,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
         body: JSON.stringify({ fileKeys }),
       });
 
-      const data = await response.json();
+      const data: { success?: boolean; error?: string } = await response.json();
       if (!response.ok) {
         console.error('Error deleting files:', data.error);
       }
@@ -130,12 +130,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     }
   };
 
-  const removeCurrentImg = () => {
+  const removeCurrentImg = async () => {
     const imgToRemove = imgs[currentIndex];
     if (imgToRemove) {
       URL.revokeObjectURL(imgToRemove.src);
       if (imgToRemove.uploadedKey) {
-        deleteUploadedFiles([imgToRemove.uploadedKey]);
+        await deleteUploadedFiles([imgToRemove.uploadedKey]);
       }
     }
 
@@ -199,13 +199,13 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             </Button>
             <Button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 imgs.forEach((img) => URL.revokeObjectURL(img.src));
                 const uploadedKeys = imgs
                   .map((img) => img.uploadedKey)
                   .filter((key): key is string => key !== null);
                 if (uploadedKeys.length > 0) {
-                  deleteUploadedFiles(uploadedKeys);
+                  await deleteUploadedFiles(uploadedKeys);
                 }
                 setImgs([]);
               }}
@@ -227,7 +227,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
       <DndContext
         sensors={sensors}
         onDragEnd={handleDragEnd}
-        collisionDetection={closestCorners!}
+        collisionDetection={closestCorners}
       >
         <ImgRow imgs={imgs} />
       </DndContext>
