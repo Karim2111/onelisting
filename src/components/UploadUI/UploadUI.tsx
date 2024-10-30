@@ -33,7 +33,7 @@ export interface ImgType {
   src: string;
   file: File;
   uploadedUrl: string | null;
-  uploadedKey: string | null; // Added uploadedKey
+  uploadedKey: string | null;
 }
 
 type UploadUIProps = {
@@ -61,7 +61,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
               return {
                 ...img,
                 uploadedUrl: uploadedFile.url,
-                uploadedKey: uploadedFile.key, // Store the uploadedKey
+                uploadedKey: uploadedFile.key,
               };
             }
           }
@@ -85,7 +85,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
+    const files = Array.from(e.target.files ?? []) as File[];
     const newImgs: ImgType[] = [];
 
     files.forEach((file) => {
@@ -98,7 +98,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           src: newUrl,
           file: file,
           uploadedUrl: null,
-          uploadedKey: null, // Initialize uploadedKey as null
+          uploadedKey: null,
         });
       } else {
         URL.revokeObjectURL(newUrl);
@@ -147,7 +147,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    setImgs((imgs) => {
+    setImgs((imgs: ImgType[]) => {
       const originalPos = imgs.findIndex((img) => img.id === active.id);
       const newPos = imgs.findIndex((img) => img.id === over.id);
 
@@ -227,7 +227,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
       <DndContext
         sensors={sensors}
         onDragEnd={handleDragEnd}
-        collisionDetection={closestCorners}
+        collisionDetection={closestCorners!}
       >
         <ImgRow imgs={imgs} />
       </DndContext>
