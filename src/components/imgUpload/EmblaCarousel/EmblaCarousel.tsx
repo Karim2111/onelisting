@@ -8,8 +8,8 @@ import {
   usePrevNextButtons
 } from './EmblaCarouselArrowButtons'
 import { DotButton, useDotButton } from './EmblaCarouselDotButton'
-import { ImgType } from '~/app/upload-img/page'
 import { Button } from '~/components/ui/button'
+import { ImgType } from '~/components/UploadUI/UploadUI'
 
 type PropType = {
   slides: ImgType[]

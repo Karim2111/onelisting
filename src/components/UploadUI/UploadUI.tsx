@@ -10,7 +10,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./Upload-UI.css";
 import { ImgRow } from "../imgUpload/imgRow/imgRow";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
@@ -21,12 +21,9 @@ import { Button } from "~/components/ui/button";
 import { Upload } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { generateReactHelpers } from "@uploadthing/react";
-
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
-export const { useUploadThing, uploadFiles } =
-  generateReactHelpers<OurFileRouter>();
-
+export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
@@ -35,10 +32,13 @@ export interface ImgType {
   src: string;
   file: File;
   uploadedUrl: string | null;
+  fileKey: string | null;
 }
 
+type UploadedImage = { url: string; fileKey: string };
+
 type UploadUIProps = {
-  onUploaded?: (urls: string[]) => void;
+  onUploaded?: (uploadedImages: UploadedImage[]) => void;
 };
 
 export default function UploadUI({ onUploaded }: UploadUIProps) {
@@ -47,34 +47,43 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (uploadedFiles) => {
-        if (!uploadedFiles) {
-          console.error("Upload failed: No files returned");
-          return;
-        }
-        setImgs((prevImgs) => {
-          let index = 0;
-          const updatedImgs = prevImgs.map((img) => {
-            if (img.uploadedUrl === null && index < uploadedFiles.length) {
-                const uploadedFile = uploadedFiles[index];
-                index++;
-                if (uploadedFile) {
-                  return { ...img, uploadedUrl: uploadedFile.url };
-                }
-            }              
-            return img;
-          });
-      
-          const uploadedUrls = updatedImgs
-            .map((img) => img.uploadedUrl)
-            .filter((url): url is string => url !== null);
-      
-          if (onUploaded) {
-            onUploaded(uploadedUrls);
+      if (!uploadedFiles) {
+        console.error("Upload failed: No files returned");
+        return;
+      }
+
+      setImgs((prevImgs) => {
+        let index = 0;
+        const updatedImgs = prevImgs.map((img) => {
+          if (img.uploadedUrl === null && index < uploadedFiles.length) {
+            const uploadedFile = uploadedFiles[index];
+            index++;
+            if (uploadedFile) {
+              return {
+                ...img,
+                uploadedUrl: uploadedFile.url,
+                fileKey: uploadedFile.key,
+              };
+            }
           }
-      
-          return updatedImgs;
+          return img;
         });
-      },
+
+        // Collect all uploaded images with URLs and fileKeys
+        const uploadedImages = updatedImgs
+          .filter((img) => img.uploadedUrl !== null && img.fileKey !== null)
+          .map((img) => ({
+            url: img.uploadedUrl as string,
+            fileKey: img.fileKey as string,
+          }));
+
+        if (onUploaded) {
+          onUploaded(uploadedImages);
+        }
+
+        return updatedImgs;
+      });
+    },
     onUploadError: (error) => {
       console.error("Upload error:", error);
     },
@@ -94,6 +103,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           src: newUrl,
           file: file,
           uploadedUrl: null,
+          fileKey: null,
         });
       } else {
         URL.revokeObjectURL(newUrl);
@@ -108,12 +118,34 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     e.target.value = "";
   };
 
-  const removeCurrentImg = () => {
+  const removeCurrentImg = async () => {
     const imgToRemove = imgs[currentIndex];
-    if (imgToRemove) URL.revokeObjectURL(imgToRemove.src);
+    if (imgToRemove) {
+      URL.revokeObjectURL(imgToRemove.src);
 
-    setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+      if (imgToRemove.fileKey) {
+        // Call API route to delete the file
+        try {
+          const response = await fetch('/api/delete-uploadthing-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileKey: imgToRemove.fileKey }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            console.error('Failed to delete file:', data.error);
+          } else {
+            console.log('File deleted successfully');
+          }
+        } catch (error) {
+          console.error('Error deleting file:', error);
+        }
+      }
+
+      setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
+      setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -172,8 +204,31 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             </Button>
             <Button
               type="button"
-              onClick={() => {
+              onClick={async () => {
+                const fileKeysToDelete = imgs
+                  .filter((img) => img.fileKey)
+                  .map((img) => img.fileKey as string);
+
                 imgs.forEach((img) => URL.revokeObjectURL(img.src));
+
+                if (fileKeysToDelete.length > 0) {
+                  try {
+                    const response = await fetch('/api/delete-uploadthing-file', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ fileKeys: fileKeysToDelete }),
+                    });
+                    const data = await response.json();
+                    if (!response.ok) {
+                      console.error('Failed to delete files:', data.error);
+                    } else {
+                      console.log('Files deleted successfully');
+                    }
+                  } catch (error) {
+                    console.error('Error deleting files:', error);
+                  }
+                }
+
                 setImgs([]);
               }}
               variant="destructive"
