@@ -164,12 +164,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
   return (
     <div className="Upload-UI">
-      <div className="flex flex-row">
+      <div className="flex flex-row flex-wrap max-width-[90%]">
         <div className="flex flex-col items-center space-y-2 justify-left">
           <Button
             variant="outline"
             size="lg"
-            className="w-full max-w-xs"
+            className="w-full max-w-48"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById("file-upload")?.click();
@@ -190,7 +190,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           <p className="text-sm text-gray-500">Max 24 images</p>
         </div>
         {imgs.length > 0 && (
-          <div className="flex gap-2 justify-end min-w-[28rem]">
+          <div className="flex gap-2 justify-end">
             <Button
               type="button"
               onClick={removeCurrentImg}

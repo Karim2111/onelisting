@@ -1,18 +1,20 @@
 .embla {
-  max-width: 42rem;
+  width: 42rem;
+  max-width: 90%;
   margin: auto;
   --slide-height: 19rem;
   --slide-spacing: 1rem;
   --slide-size: 70%;
+  
 }
 .embla__viewport {
   overflow: hidden;
+  max-width: 90%;
 }
 .embla__container {
   display: flex;
   touch-action: pan-y pinch-zoom;
   margin-left: calc(var(--slide-spacing) * -1);
-  width: 42rem
 }
 .embla__slide {
   transform: translate3d(0, 0, 0);
