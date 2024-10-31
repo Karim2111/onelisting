@@ -15,6 +15,7 @@ import { insertListingToDb } from "~/app/dashboard/actions";
 import { useRouter } from "next/navigation";
 import UploadUI from "~/components/UploadUI/UploadUI";
 import TagsField from "~/components/ui/tags-component";
+import { FloatingInput } from "./form-inputs"
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
@@ -89,31 +90,27 @@ export default function MyForm() {
           </FormItem>
         )}
       />
-
-
-
-
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input 
-                placeholder="Title"
-                
-                type="text"
-                {...field} />
+                <FloatingInput 
+                  placeholder="Title"
+                  type="text"
+                  {...field}
+                  minLength={8}
+                  maxLength={64}
+                />
               </FormControl>
-              
               <FormMessage />
             </FormItem>
           )}
         />
-        
         <div className="grid grid-cols-12 gap-4">
           
-          <div className="col-span-6">
+          <div className="col-span-4">
             
         <FormField
           control={form.control}
@@ -121,9 +118,8 @@ export default function MyForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input 
-                placeholder="Price"
-                
+                <FloatingInput 
+                placeholder="Price ($)"
                 type="number"
                 {...field} 
                 onChange={event => field.onChange(+event.target.value)}/>
@@ -135,7 +131,7 @@ export default function MyForm() {
         />
           </div>
           
-          <div className="col-span-6">
+          <div className="col-span-4">
             
         <FormField
           control={form.control}
@@ -143,7 +139,7 @@ export default function MyForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input 
+                <FloatingInput 
                 placeholder="SKU"
                 
                 type="text"

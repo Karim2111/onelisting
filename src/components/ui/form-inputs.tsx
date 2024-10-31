@@ -1,41 +1,36 @@
-"use client"
+import React from "react";
+import { InputProps } from "~/components/ui/input";
 
-import * as React from "react"
+export function FloatingInput({ className = "", minLength, maxLength, placeholder, value, onChange, ...props }: InputProps) {
+  const [isFocused, setIsFocused] = React.useState(false);
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
-  maxLength?: number
+  return (
+    <div className="relative w-full">
+      <input
+        {...props}
+        value={value} // Use form-controlled value
+        onChange={onChange} // Use form-controlled onChange
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(value ? true : false)}
+        className={`peer w-full text-black rounded-md border bg-white px-4 pt-6 pb-2 text-base outline-none transition-all 
+          focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${className}`}
+      />
+      <span
+        className={`absolute left-4 pointer-events-none transition-all duration-200 
+          ${isFocused || value ? 'text-xs translate-y-1 text-blue-500' : 'translate-y-4 text-gray-500'}`}
+      >
+        {placeholder}
+      </span>
+      {minLength && (
+        <div className="mt-1 text-xs text-gray-500">
+            {!value ? -minLength : value.toString().length < minLength ? -minLength + value.toString().length : maxLength ? `${value.toString().length}/${maxLength}` : 0} Characters
+         </div>
+        )}
+    </div>
+  );
 }
 
-export function FloatingInput({ className = "", maxLength, placeholder, ...props }: InputProps) {
-    const [value, setValue] = React.useState("");
-    const [isFocused, setIsFocused] = React.useState(false);
-  
-    return (
-      <div className="relative w-full">
-        <input
-          {...props}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(value.length === 0 ? false : true)}
-          // Set text color to black
-          className={`peer w-full text-black rounded-md border bg-white px-4 pt-6 pb-2 text-base outline-none transition-all 
-            focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${className}`}
-        />
-        <span
-          className={`absolute left-4 pointer-events-none transition-all duration-200 
-            ${isFocused || value ? 'text-xs translate-y-1 text-blue-500' : 'translate-y-4 text-gray-500'}`}
-        >
-          {placeholder} {/* Use only this span for displaying the placeholder */}
-        </span>
-        {maxLength && (
-          <div className="mt-1 text-xs text-gray-500">
-            {value.length}/{maxLength} characters
-          </div>
-        )}
-      </div>
-    );
-  }
+
 
 export function FloatingSelect({ className = "", placeholder }: { className?: string; placeholder: string }) {
   const [value, setValue] = React.useState("")
