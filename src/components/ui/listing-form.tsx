@@ -74,7 +74,10 @@ export default function MyForm() {
   
 
   return (
-    <div className="w-[42rem] overflow-auto max-h-[100%] ">
+    <div className="w-[42rem] overflow-auto max-h-[100%] max-w-[95%] ">
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight m-4 text-align:center">
+      List Your Item
+    </h2>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
        
