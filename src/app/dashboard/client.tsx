@@ -6,6 +6,7 @@ import { columns } from "./data-table/columns";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
+import { Shell } from "../../components/shells/shell";
 
 export interface Listing {
   id: number;
@@ -40,7 +41,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ listings }) => {
           <Plus /> Create Listing
         </Link>
       </Button>
-      <DataTable columns={columns} data={localListings} />
+      <Shell>
+      <div className='flex h-full min-h-screen w-full flex-col'>
+        <DataTable data={localListings} columns={columns} />
+      </div>
+    </Shell>
     </div>
   );
 };

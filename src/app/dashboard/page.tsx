@@ -1,20 +1,23 @@
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { columns } from "./data-table/columns";
+import { DataTable } from "./data-table/data-table";
+import { Shell } from "../../components/shells/shell";
+import { taskSchema } from "~/lib/validations/schema";
+import { z } from "zod";
 import { getmyListings } from "~/server/queries";
-import ClientDashboard from "./client";
 
-export const dynamic = "force-dynamic";
+export const runtime = 'edge';
 
-export default async function DashboardPage() {
+
+
+
+
+export default async function TaskPage() {
   const listings = await getmyListings();
-
   return (
-    <main>
-      <SignedOut>
-        <div className="w-full h-full text-2xl text-center">Please Sign In</div>
-      </SignedOut>
-      <SignedIn>
-        <ClientDashboard listings={listings} />
-      </SignedIn>
-    </main>
+    <Shell>
+      <div className='flex h-full min-h-screen w-full flex-col'>
+        <DataTable data={listings} columns={columns} />
+      </div>
+    </Shell>
   );
 }
