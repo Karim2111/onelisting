@@ -4,9 +4,9 @@ import { auth } from "@clerk/nextjs/server";
 import { listings } from "./db/schema";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { myListingType } from "~/app/dashboard/client";
+import { Listing } from "~/app/dashboard/client";
 
-export async function getmyListings(): Promise<myListingType[]> {
+export async function getmyListings(): Promise<Listing[]> {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthorized");
 

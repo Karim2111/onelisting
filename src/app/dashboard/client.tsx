@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
+import { DataTable } from "./data-table/data-table";
+import { columns } from "./data-table/columns";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 
-interface Listing {
+export interface Listing {
   id: number;
   userId: string | null;
   title: string;
@@ -21,6 +21,8 @@ interface Listing {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
 
 interface ClientDashboardProps {
   listings: Listing[];
