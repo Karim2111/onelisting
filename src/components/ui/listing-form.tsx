@@ -9,7 +9,7 @@ import {  Button } from "~/components/ui/button"
 import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectLight";
 import { Textarea } from "~/components/ui/textarea";
 import { insertListingToDb } from "~/app/dashboard/actions";
 import { useRouter } from "next/navigation";
