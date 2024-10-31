@@ -164,12 +164,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
   return (
     <div className="Upload-UI">
-      <div className="flex flex-row flex-wrap max-width-[90%]">
-        <div className="flex flex-col items-center space-y-2 justify-left">
+      <div className="flex flex-row flex-wrap max-width-[100%] justify-stretch gap-2">
+        <div className="flex flex-col space-y-2">
           <Button
             variant="outline"
-            size="lg"
-            className="w-full max-w-48"
+            size="default"
+            className="w-full max-w-48 max-w-xs"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById("file-upload")?.click();
@@ -187,7 +187,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             aria-label="Upload images"
             onChange={handleFileChange}
           />
-          <p className="text-sm text-gray-500">Max 24 images</p>
+          <p className="text-sm text-gray-500 text-center">Max 24 images</p>
         </div>
         {imgs.length > 0 && (
           <div className="flex gap-2 justify-end">
