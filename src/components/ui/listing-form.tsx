@@ -108,6 +108,32 @@ export default function MyForm() {
             </FormItem>
           )}
         />
+        <div>
+            
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="new">new</SelectItem>
+                      <SelectItem value="like-new">Used (like-new)</SelectItem>
+                      <SelectItem value="good">Used (good)</SelectItem>
+                      <SelectItem value="fair">Used (fair)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                    
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+              </div>
         <div className="grid grid-cols-12 gap-4">
           
           <div className="col-span-4">
@@ -151,67 +177,35 @@ export default function MyForm() {
           )}
         />
           </div>
+
+          <div className="col-span-4">
+            
+            <FormField
+              control={form.control}
+              name="condition"
+              render={({ field }) => (
+                <FormItem>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Condition" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                    <SelectItem value="new">Brand new</SelectItem>
+                      <SelectItem value="like-new">Used (like-new)</SelectItem>
+                      <SelectItem value="good">Used (good)</SelectItem>
+                      <SelectItem value="fair">Used (fair)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                    
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+              </div>
           
         </div>
-        
-        <div className="grid grid-cols-12 gap-4">
-          
-          <div className="col-span-6">
-            
-        <FormField
-          control={form.control}
-          name="condition"
-          render={({ field }) => (
-            <FormItem>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Condition" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                <SelectItem value="new">Brand new</SelectItem>
-                  <SelectItem value="like-new">Used (like-new)</SelectItem>
-                  <SelectItem value="good">Used (good)</SelectItem>
-                  <SelectItem value="fair">Used (fair)</SelectItem>
-                </SelectContent>
-              </Select>
-                
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-          </div>
-          
-          <div className="col-span-6">
-            
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="new">new</SelectItem>
-                  <SelectItem value="like-new">Used (like-new)</SelectItem>
-                  <SelectItem value="good">Used (good)</SelectItem>
-                  <SelectItem value="fair">Used (fair)</SelectItem>
-                </SelectContent>
-              </Select>
-                
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-          </div>
-          
-        </div>
-        
         <FormField
           control={form.control}
           name="description"
