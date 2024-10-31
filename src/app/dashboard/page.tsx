@@ -1,8 +1,8 @@
 import { columns } from "./data-table/columns";
 import { DataTable } from "./data-table/data-table";
 import { Shell } from "../../components/shells/shell";
-import { taskSchema } from "~/lib/validations/schema";
-import { z } from "zod";
+
+
 import { getmyListings } from "~/server/queries";
 
 export const runtime = 'edge';
