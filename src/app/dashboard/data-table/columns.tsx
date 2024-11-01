@@ -50,15 +50,7 @@ export const columns: ColumnDef<Listing>[] = [
       enableSorting: false,
       enableHiding: false,
     },
-    {
-      accessorKey: "id",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Task' />
-      ),
-      cell: ({ row }) => <div className='w-[80px]'>{row.getValue("id")}</div>,
-      enableSorting: false,
-      enableHiding: false,
-    },
+    
     {
       accessorKey: "title",
       header: ({ column }) => (
@@ -104,15 +96,29 @@ export const columns: ColumnDef<Listing>[] = [
         
     },
     {
-      accessorKey: "dateLastUpdated",
+      accessorKey: "updatedAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Date Last updated' />
+        <DataTableColumnHeader column={column} title='Last Updated' />
       ),
-      
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+      cell: ({ row }) => {
+        const updatedAt = new Date(row.getValue("updatedAt"));
+        
+        // Use RegExp#exec() to extract "Oct 31 2024" format
+        const dateStr = updatedAt.toString();
+        const longFormat = /([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/;
+        
+        const match = longFormat.exec(dateStr);
+        const formattedDate = match ? `${match[1]} ${match[2]}, ${match[3]}` : dateStr;
+
+        return <div>{formattedDate}</div>;
+      },
+    },
+    {
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Actions' />
+      ),
+      id: "actions",
+      cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 
   

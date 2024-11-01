@@ -16,7 +16,7 @@ export default async function TaskPage() {
   const listings = await getmyListings();
   return (
     <Shell>
-      <div className='flex h-full min-h-screen w-full flex-col'>
+      <div className='flex h-full min-h-screen w-full flex-col max-w-[100%]'>
         <DataTable data={listings} columns={columns} />
       </div>
     </Shell>
