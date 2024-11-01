@@ -9,25 +9,34 @@ import {  Button } from "~/components/ui/button"
 import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectLight";
 import { Textarea } from "~/components/ui/textarea";
 import { insertListingToDb } from "~/app/dashboard/actions";
 import { useRouter } from "next/navigation";
 import UploadUI from "~/components/UploadUI/UploadUI";
 import TagsField from "~/components/ui/tags-component";
-import { FloatingInput } from "./form-inputs"
+import { FloatingInput, FloatingTextarea } from "./inputsLight"
+
+const descriptionMinLength = 8;
+const descriptionMaxLength = 61000;
+const titleMinLength = 8;
+const titleMaxLength = 64;
+const skuMaxLength = 64;
+const skuMinLength = 1;
+const priceMinValue = 0;
+const priceMaxValue = 999999999;
 
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
-  title: z.string().min(8).max(64),
-  price: z.number().int().nonnegative().lte(999999999),
+  title: z.string().min(titleMinLength).max(titleMaxLength),
+  price: z.number().int().nonnegative().gte(priceMinValue).lte(priceMaxValue),
   sku: z.string().min(1).max(64).optional(),
   condition: z.string(),
   category: z.string(),
   description: z
     .string()
-    .min(1, {
-      message: "Description must be at least 1 character.",
+    .min(8, {
+      message: "Description must be at least 8 character.",
     })
     .max(61000, {
       message: "Description must not be longer than 61000 characters.",
@@ -215,9 +224,11 @@ export default function MyForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Textarea
+                <FloatingTextarea
                   placeholder="Description"
                   className="h-32"
+                  minLength={8}
+                  maxLength={64}
                   {...field}
                 />
               </FormControl>
