@@ -14,8 +14,7 @@ export const runtime = 'edge';
 export default async function TaskPage() {
   const listings = await getmyListings();
   return (
-    <Shell variant="centered" className="custom-class">
-  
+    <Shell>
       <div className='flex h-full min-h-screen w-full flex-col'>
         <DataTable data={listings} columns={columns} />
       </div>

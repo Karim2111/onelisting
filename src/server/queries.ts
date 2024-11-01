@@ -1,4 +1,4 @@
-import "server-only";
+"use server"
 import { db } from "./db";
 import { auth } from "@clerk/nextjs/server";
 import { listings } from "./db/schema";
@@ -56,7 +56,7 @@ export async function getListing(id: number) {
   return listing;
 }
 
-export async function deleteListing(id: number) {
+export async function deleteListing(id: number): Promise<void> {
     const user = await auth();
     if (!user.userId) throw new Error("Unauthorized");
   
