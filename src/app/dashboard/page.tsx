@@ -16,6 +16,7 @@ export default async function TaskPage() {
   const listings = await getmyListings();
   return (
     <Shell>
+      <h1 className="text-4xl font-bold text-primary mb-2">My OneListing Dashboard</h1>
       <div className='flex h-full min-h-screen w-full flex-col max-w-[100%]'>
         <DataTable data={listings} columns={columns} />
       </div>

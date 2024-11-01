@@ -1,7 +1,3 @@
-"use client";
-
-// * * This is just a demonstration of edit modal; actual functionality may vary.
-
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,10 +14,13 @@ import { Button } from "~/components/ui/button";
 import { DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Listing } from "~/app/dashboard/client";
 import { updateListing } from "~/app/dashboard/actions";
+import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type EditProps = {
   task: Listing;
-  
+  onClose: () => void;  // Close function passed as a prop
 };
 
 export const editSchema = z.object({
@@ -34,7 +33,7 @@ export const editSchema = z.object({
 
 type editSchemaType = z.infer<typeof editSchema>;
 
-export default function EditDialog({ task }: EditProps) {
+export default function EditDialog({ task, onClose }: EditProps) {
   const form = useForm<editSchemaType>({
     resolver: zodResolver(editSchema),
     defaultValues: {
@@ -46,18 +45,39 @@ export default function EditDialog({ task }: EditProps) {
     },
   });
 
+  const { toast } = useToast(); // shadcn/ui toast
+  const router = useRouter();
+
   async function handleUpdate(values: editSchemaType) {
     try {
-      await updateListing( values); // Pass `task.id` to update the specific listing
+      await updateListing(values); // Pass `task.id` to update the specific listing
+      toast({
+        title: "Success!",
+        description: "Listing Updated successfully.",
+        duration: 5000,
+        style: {
+          backgroundColor: "limegreen", // Bright green background
+          color: "white", // White text for contrast
+        },
+      });
+
+      router.push("/dashboard");
+      onClose();  // Close the dialog after updating
     } catch (error) {
-      console.error("Error updating listing:", error);
+      console.error("Form submission error", error);
+      toast({
+        title: "Error",
+        description: "Failed to edit the listing.",
+        duration: 3000,
+        variant: "destructive",
+      });
     }
   }
 
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Edit Task Details</DialogTitle>
+        <DialogTitle>Edit Listing Details</DialogTitle>
       </DialogHeader>
       <div className="py-4">
         <Form {...form}>

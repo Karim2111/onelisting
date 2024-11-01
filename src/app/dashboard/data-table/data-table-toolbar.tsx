@@ -5,7 +5,8 @@ import type { Table } from "@tanstack/react-table"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { DataTableViewOptions } from "./data-table-view-options"
-import { X } from "lucide-react"
+import { PlusCircle, X } from "lucide-react"
+import Link from "next/link"
 
 
 interface DataTableToolbarProps<TData> {
@@ -19,15 +20,23 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder="Filter tasks..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
-        />
+      <div>
+        <div className="flex flex-1 items-center space-x-2">
+          <Input
+            placeholder="Filter tasks..."
+            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("title")?.setFilterValue(event.target.value)
+            }
+            className="h-8 w-[150px] lg:w-[250px]"
+          />
+        <Button asChild className="w-full sm:w-auto">
+          <Link href="/create-listing" className="inline-flex items-center justify-center">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create New Listing
+          </Link>
+        </Button>
+      </div>
         
         {isFiltered && (
           <Button

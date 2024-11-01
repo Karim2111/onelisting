@@ -60,7 +60,7 @@ export const columns: ColumnDef<Listing>[] = [
     {
       accessorKey: "images",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Images' />
+        <DataTableColumnHeader column={column} title='Main Image' />
       ),
       cell: ({ row }) => {
         const images = row.getValue<string[]>("images");
@@ -70,15 +70,11 @@ export const columns: ColumnDef<Listing>[] = [
         ) : null;
       },
     },
-    
-    
-    
-    
     {
       accessorKey: "price",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Price' />
-      ),
+        <DataTableColumnHeader column={column} title='Price' />),
+      cell: ({ row }) => <p>${row.getValue("price")}</p>,
       
     },
     {
