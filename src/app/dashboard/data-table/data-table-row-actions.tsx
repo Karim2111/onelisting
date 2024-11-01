@@ -58,9 +58,6 @@ export function DataTableRowActions<TData>({
         <DropdownMenuContent align='end' className='w-[200px]'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DialogTrigger asChild onClick={() => {}}>
-
-          </DialogTrigger>
           <DialogTrigger asChild onClick={handleEditClick}>
             <DropdownMenuItem>
               <Pencil className='mr-2 h-4 w-4' />
