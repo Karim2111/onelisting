@@ -46,8 +46,6 @@ export default function EditDialog({ task, onClose }: EditProps) {
   });
 
   const { toast } = useToast(); // shadcn/ui toast
-  const router = useRouter();
-
   async function handleUpdate(values: editSchemaType) {
     try {
       await updateListing(values); // Pass `task.id` to update the specific listing
@@ -60,8 +58,6 @@ export default function EditDialog({ task, onClose }: EditProps) {
           color: "white", // White text for contrast
         },
       });
-
-      router.push("/dashboard");
       onClose();  // Close the dialog after updating
     } catch (error) {
       console.error("Form submission error", error);
