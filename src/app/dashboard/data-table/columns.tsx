@@ -9,7 +9,7 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 
 
 
-interface Listing {
+export interface Listing {
     id: number;
     userId: string | null;
     title: string;
@@ -64,11 +64,18 @@ export const columns: ColumnDef<Listing>[] = [
       ),
     },
     {
-        accessorKey: "images",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Images' />
-        ),
+      accessorKey: "images",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Images' />
+      ),
+      cell: ({ row }) => {
+        const images = row.getValue("images") as string[];
+        const firstImage = images && images.length > 0 ? images[0] : null;
+        return firstImage ? (
+          <img src={firstImage} alt="Listing Image" style={{ width: 50, height: 50 }} />
+        ) : null;
       },
+    },
     {
       accessorKey: "price",
       header: ({ column }) => (
@@ -84,13 +91,6 @@ export const columns: ColumnDef<Listing>[] = [
       
     },
     {
-      accessorKey: "condition",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Condition' />
-      ),
-      
-    },
-    {
         accessorKey: "category",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title='Category' />
@@ -98,18 +98,13 @@ export const columns: ColumnDef<Listing>[] = [
         
     },
     {
-        accessorKey: "description",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Description' />
-        ),
-        
-    },
-    {
-        accessorKey: "tags",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Tags' />
-        ),
-        
-    },
+      accessorKey: "dateLastUpdated",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Date Last updated' />
+      ),
+      
+  },
     
+
+  
   ];
