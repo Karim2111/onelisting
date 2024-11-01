@@ -50,23 +50,30 @@ export const columns: ColumnDef<Listing>[] = [
       enableSorting: false,
       enableHiding: false,
     },
-    
-    {
-      accessorKey: "title",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Title' />
-      ),
-    },
     {
       accessorKey: "images",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Main Image' />
-      ),
       cell: ({ row }) => {
         const images = row.getValue<string[]>("images");
         const firstImage = images && images.length > 0 ? images[0] : null;
         return firstImage ? (
           <img src={firstImage} alt="Listing Image" style={{ width: 50, height: 50 }} />
+        ) : null;
+      },
+    },
+    {
+      accessorKey: "title",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Title' />
+      ),
+      cell: ({ row }) => {
+        const images = row.getValue<string[]>("images");
+        const firstImage = images && images.length > 0 ? images[0] : null;
+        const title = row.getValue<string>("title")
+        return firstImage ? (
+          <div className="flex flex-row">
+            <img src={firstImage} alt="Listing Image" style={{ width: 50, height: 50 }} /> 
+            <p>{title}</p>
+          </div>
         ) : null;
       },
     },

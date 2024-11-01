@@ -4,6 +4,7 @@
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "~/components/theme-toggle";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -61,6 +62,7 @@ export function TopNav() {
               </NavigationMenu>
             </div>
             <div className="flex flex-row gap-4 items-center">
+              <ModeToggle />
               <UserButton />
             </div>
             </SignedIn>

@@ -4,6 +4,7 @@ import { TopNav } from "./_components/topnav";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
+import { ThemeProvider } from "~/components/theme-provider"
 
 export const metadata: Metadata = {
   title: "OneListing",
@@ -17,10 +18,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="font-sans bold dark">
+        <body className="font-sans bold">
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
           <TopNav />
           {children}
           <Toaster /> {/* Add this to render the toasts */}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
