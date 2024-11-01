@@ -6,10 +6,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "~/components/ui/checkbox";
 
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableRowActions } from "./data-table-row-actions";
 
 
 
-export interface Listing {
+ interface Listing {
     id: number;
     userId: string | null;
     title: string;
@@ -104,7 +105,10 @@ export const columns: ColumnDef<Listing>[] = [
       ),
       
   },
-    
+  {
+    id: "actions",
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+  },
 
   
   ];
