@@ -24,6 +24,7 @@ import {Listing} from "../client";
 
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import DeleteDialog from "~/components/modals/delete-modal";
+import EditDialog from "~/components/modals/edit-modal";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -37,6 +38,9 @@ export function DataTableRowActions<TData>({
   const [showDeleteDialog, setShowDeleteDialog] =
     React.useState<boolean>(false);
   const task = row.original as Listing;
+  const handleEditClick = () => {
+    setDialogContent(<EditDialog task={task} />);
+  };
 
   
   return (
@@ -53,6 +57,17 @@ export function DataTableRowActions<TData>({
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[200px]'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DialogTrigger asChild onClick={() => {}}>
+
+          </DialogTrigger>
+          <DialogTrigger asChild onClick={handleEditClick}>
+            <DropdownMenuItem>
+              <Pencil className='mr-2 h-4 w-4' />
+              Edit Details
+            </DropdownMenuItem>
+          </DialogTrigger>
+      
           <DropdownMenuItem
             onSelect={() => setShowDeleteDialog(true)}
             className='text-red-600'

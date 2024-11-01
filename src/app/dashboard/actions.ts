@@ -4,6 +4,10 @@ import { listings } from "~/server/db/schema";
 import { formSchema } from "~/components/ui/listing-form";
 import * as z from "zod"
 import { auth } from "@clerk/nextjs/server";
+import {editSchema} from "~/components/modals/edit-modal"
+import { eq, and } from "drizzle-orm";
+import { redirect } from "next/navigation";
+
 
 export async function insertListingToDb(formValues: z.infer < typeof formSchema >) {
     const user = await auth()
@@ -24,4 +28,21 @@ export async function insertListingToDb(formValues: z.infer < typeof formSchema 
         }
       )
   
+}
+
+export async function updateListing(formValues: z.infer<typeof editSchema>) {
+  const user = await auth();
+  const id = formValues.id 
+  // Update only fields in `editSchema`
+  await db.update(listings)
+    .set({
+      title: formValues.title,
+      price: formValues.price,
+      sku: formValues.sku,
+      category: formValues.category,
+      updatedAt: new Date()
+    })
+    .where(eq(listings.id, id));
+    redirect("/dashboard")
+    // Ensure the listing belongs to the authenticated user
 }

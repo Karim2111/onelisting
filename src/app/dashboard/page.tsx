@@ -5,6 +5,7 @@ import { Shell } from "../../components/shells/shell";
 
 import { getmyListings } from "~/server/queries";
 
+
 export const runtime = 'edge';
 
 
