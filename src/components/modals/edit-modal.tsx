@@ -17,6 +17,8 @@ import { updateListing } from "~/app/dashboard/actions";
 import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FloatingInput, FloatingTextarea } from "../ui/inputsLight";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectLight";
 
 type EditProps = {
   task: Listing;
@@ -26,9 +28,18 @@ type EditProps = {
 export const editSchema = z.object({
   id: z.number(),
   title: z.string().min(8).max(64),
-  price: z.number().int().nonnegative().lte(999999999),
+  price: z.number().int().nonnegative().gte(0).lte(999999999),
   sku: z.string().min(1).max(64).optional(),
-  category: z.string(),
+  condition: z.string(),
+  description: z
+    .string()
+    .min(8, {
+      message: "Description must be at least 8 character.",
+    })
+    .max(61000, {
+      message: "Description must not be longer than 61000 characters.",
+    }),
+  
 });
 
 type editSchemaType = z.infer<typeof editSchema>;
@@ -41,12 +52,14 @@ export default function EditDialog({ task, onClose }: EditProps) {
       title: task.title,
       price: task.price,
       sku: task.sku ?? undefined,
-      category: task.category,
+      condition: task.condition,
+      description: task.description,
     },
   });
 
   const { toast } = useToast(); // shadcn/ui toast
   async function handleUpdate(values: editSchemaType) {
+
     try {
       await updateListing(values); // Pass `task.id` to update the specific listing
       toast({
@@ -92,18 +105,22 @@ export default function EditDialog({ task, onClose }: EditProps) {
               )}
             />
             <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <FloatingInput 
+                placeholder="Price ($)"
+                type="number"
+                {...field} 
+                onChange={event => field.onChange(+event.target.value)}/>
+              </FormControl>
+              
+              <FormMessage />
+            </FormItem>
+          )}
+        />
             <FormField
               control={form.control}
               name="sku"
@@ -119,17 +136,46 @@ export default function EditDialog({ task, onClose }: EditProps) {
             />
             <FormField
               control={form.control}
-              name="category"
+              name="condition"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Input type="text" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Condition" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                    <SelectItem value="new">Brand new</SelectItem>
+                      <SelectItem value="like-new">Used (like-new)</SelectItem>
+                      <SelectItem value="good">Used (good)</SelectItem>
+                      <SelectItem value="fair">Used (fair)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                    
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <FloatingTextarea
+                  placeholder="Description"
+                  className="h-32"
+                  minLength={8}
+                  maxLength={64}
+                  {...field}
+                />
+              </FormControl>
+              
+              <FormMessage />
+            </FormItem>
+          )}
+        />
             <Button type="submit" className="mt-2 w-full">
               Update Listing
             </Button>

@@ -39,7 +39,8 @@ export async function updateListing(formValues: z.infer<typeof editSchema>) {
       title: formValues.title,
       price: formValues.price,
       sku: formValues.sku,
-      category: formValues.category,
+      condition: formValues.condition,
+      description: formValues.description,
       updatedAt: new Date()
     })
     .where(eq(listings.id, id));

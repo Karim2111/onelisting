@@ -65,6 +65,7 @@ export const columns: ColumnDef<Listing>[] = [
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Title' />
       ),
+      /*
       cell: ({ row }) => {
         const images = row.getValue<string[]>("images");
         const firstImage = images && images.length > 0 ? images[0] : null;
@@ -75,7 +76,7 @@ export const columns: ColumnDef<Listing>[] = [
             <p>{title}</p>
           </div>
         ) : null;
-      },
+      },*/
     },
     {
       accessorKey: "price",
