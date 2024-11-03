@@ -24,21 +24,21 @@ const FloatingTextarea = React.forwardRef<HTMLTextAreaElement, FloatingTextareaP
           onBlur={() => setIsFocused(hasValue)}
           ref={ref}
           className={cn(
-            "peer w-full min-h-[80px] resize-y text-black rounded-md border bg-white px-4 pt-6 pb-2 text-base outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500",
+            "peer w-full min-h-[80px] resize-y rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500",
             className
           )}
         />
         <span
           className={`absolute left-4 top-2 pointer-events-none transition-all duration-200 
             ${isFocused || hasValue
-              ? "text-xs translate-y-[-50%] text-blue-500"
+              ? "text-xs translate-y-[-50%] "
               : "translate-y-4 text-gray-500"}
           `}
         >
           {placeholder}
         </span>
         {minLength && (
-        <div className="mt-1 text-xs text-gray-500">
+        <div className="mt-1 text-xs ">
             {!value ? -minLength : value.toString().length < minLength ? -minLength + value.toString().length : maxLength ? `${value.toString().length}/${maxLength}` : 0} Characters
          </div>
         )}
@@ -63,17 +63,17 @@ export function FloatingInput({ className = "", minLength, maxLength, placeholde
         onChange={onChange} // Use form-controlled onChange
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(value ? true : false)}
-        className={`peer w-full text-black rounded-md border bg-white px-4 pt-6 pb-2 text-base outline-none transition-all 
+        className={`peer w-full rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all 
           focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${className}`}
       />
       <span
         className={`absolute left-4 pointer-events-none transition-all duration-200 
-          ${isFocused || value ? 'text-xs translate-y-1 text-blue-500' : 'translate-y-4 text-gray-500'}`}
+          ${isFocused || value ? 'text-xs translate-y-1 ' : 'translate-y-4 '}`}
       >
         {placeholder}
       </span>
       {minLength && (
-        <div className="mt-1 text-xs text-gray-500">
+        <div className="mt-1 text-xs ">
             {!value ? -minLength : value.toString().length < minLength ? -minLength + value.toString().length : maxLength ? `${value.toString().length}/${maxLength}` : 0} Characters
          </div>
         )}

@@ -83,7 +83,7 @@ export default function TagsField({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           onFocus={handleFocus}
-          className={`w-full px-3 pt-6 pb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black transition-all duration-300 ease-out ${
+          className={`w-full px-3 pt-6 pb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[var(--foreground)] transition-all duration-300 ease-out ${
             isMaxTagsReached ? 'bg-gray-100' : ''
           }`}
           disabled={isMaxTagsReached}
