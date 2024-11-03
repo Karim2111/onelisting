@@ -18,7 +18,7 @@ import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FloatingInput, FloatingTextarea } from "../ui/inputsLight";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectLight";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectThick";
 
 type EditProps = {
   task: Listing;
@@ -65,11 +65,7 @@ export default function EditDialog({ task, onClose }: EditProps) {
       toast({
         title: "Success!",
         description: "Listing Updated successfully.",
-        duration: 5000,
-        style: {
-          backgroundColor: "limegreen", // Bright green background
-          color: "white", // White text for contrast
-        },
+        duration: 3000
       });
       onClose();  // Close the dialog after updating
     } catch (error) {
