@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 
 import { useEffect } from 'react';
 import { env } from '~/env';
@@ -22,7 +22,7 @@ export default function FacebookSDKLoader() {
           version: 'v21.0',
         });
 
-        /*FB.login((response: fb.AuthResponse) => {
+        FB.login((response: fb.AuthResponse) => {
           if (response.authResponse) {
             console.log('Welcome! Fetching your information....');
             FB.api('/me', (userResponse: { name: string }) => {
@@ -32,7 +32,7 @@ export default function FacebookSDKLoader() {
           } else {
             console.log('User cancelled login or did not fully authorize.');
           }
-        }); */
+        }); 
       };
     };
 
@@ -41,3 +41,4 @@ export default function FacebookSDKLoader() {
 
   return null;
 }
+*/

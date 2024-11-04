@@ -28,7 +28,7 @@ export function DataTableToolbar<TData>({
             onChange={(event) =>
               table.getColumn("title")?.setFilterValue(event.target.value)
             }
-            className="h-8 w-[150px] lg:w-[250px]"
+            className="h-9 w-[150px] lg:w-[250px]"
           />
         <Button asChild className="w-full sm:w-auto">
           <Link href="/create-listing" className="inline-flex items-center justify-center">
