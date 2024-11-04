@@ -28,13 +28,8 @@ export default function RootLayout({
             disableTransitionOnChange
           >
           <TopNav />
-          <SignedOut>
-            <UnderConstruction />
-          </SignedOut>
-          <SignedIn>
           {children}
           <Toaster /> {/* Add this to render the toasts */}
-          </SignedIn>
           </ThemeProvider>
         </body>
       </html>
