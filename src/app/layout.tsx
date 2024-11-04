@@ -1,10 +1,12 @@
 import "~/styles/globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { TopNav } from "./_components/topnav";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "~/components/theme-provider"
+import UnderConstruction from "~/components/ui/construction";
+
 
 export const metadata: Metadata = {
   title: "OneListing",
@@ -26,8 +28,13 @@ export default function RootLayout({
             disableTransitionOnChange
           >
           <TopNav />
+          <SignedOut>
+            <UnderConstruction />
+          </SignedOut>
+          <SignedIn>
           {children}
           <Toaster /> {/* Add this to render the toasts */}
+          </SignedIn>
           </ThemeProvider>
         </body>
       </html>
