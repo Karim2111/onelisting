@@ -8,7 +8,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { string } from "zod";
-
+import Image from "next/image";
 
 
  interface Listing {
@@ -56,7 +56,13 @@ export const columns: ColumnDef<Listing>[] = [
         const images = row.getValue<string[]>("images");
         const firstImage = images && images.length > 0 ? images[0] : null;
         return firstImage ? (
-          <img src={firstImage} alt="Listing Image" style={{ width: 50, height: 50 }} />
+          <Image
+            src={firstImage}
+            alt="Listing Image"
+            width={50}
+            height={50}
+            style={{ objectFit: "cover" }}
+          />
         ) : null;
       },
     },
