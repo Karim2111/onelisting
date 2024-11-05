@@ -35,16 +35,16 @@ export const columns: ColumnDef<Listing>[] = [
           onCheckedChange={(value: any) =>
             table.toggleAllPageRowsSelected(!!value)
           }
-          aria-label='Select all'
-          className='translate-y-[2px]'
+          aria-label="Select all"
+          className="translate-y-[2px]"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label='Select row'
-          className='translate-y-[2px]'
+          aria-label="Select row"
+          className="translate-y-[2px]"
         />
       ),
       enableSorting: false,
@@ -63,67 +63,52 @@ export const columns: ColumnDef<Listing>[] = [
     {
       accessorKey: "title",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Title' />
+        <DataTableColumnHeader column={column} title="Title" />
       ),
-      /*
-      cell: ({ row }) => {
-        const images = row.getValue<string[]>("images");
-        const firstImage = images && images.length > 0 ? images[0] : null;
-        const title = row.getValue<string>("title")
-        return firstImage ? (
-          <div className="flex flex-row">
-            <img src={firstImage} alt="Listing Image" style={{ width: 50, height: 50 }} /> 
-            <p>{title}</p>
-          </div>
-        ) : null;
-      },*/
     },
     {
       accessorKey: "price",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Price' />),
-      cell: ({ row }) => <p>${row.getValue("price")}</p>,
-      
+        <DataTableColumnHeader column={column} title="Price" className="hidden lg:block" />
+      ),
+      cell: ({ row }) => <p className="hidden lg:block">${row.getValue("price")}</p>,
     },
     {
       accessorKey: "sku",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='SKU' />
+        <DataTableColumnHeader column={column} title="SKU" className="hidden lg:block" />
       ),
-      
+      cell: ({ row }) => <p className="hidden lg:block">{row.getValue("sku")}</p>,
     },
     {
-        accessorKey: "category",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Category' />
-        ),
-        
+      accessorKey: "category",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Category" className="hidden lg:block" />
+      ),
+      cell: ({ row }) => <p className="hidden lg:block">{row.getValue("category")}</p>,
     },
     {
       accessorKey: "updatedAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Last Updated' />
+        <DataTableColumnHeader column={column} title="Last Updated" className="hidden lg:block" />
       ),
       cell: ({ row }) => {
         const updatedAt = new Date(row.getValue("updatedAt"));
-        
-        // Use RegExp#exec() to extract "Oct 31 2024" format
         const dateStr = updatedAt.toString();
         const longFormat = /([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/;
-        
         const match = longFormat.exec(dateStr);
         const formattedDate = match ? `${match[1]} ${match[2]}, ${match[3]}` : dateStr;
-
-        return <div>{formattedDate}</div>;
+        return <div className="hidden lg:block">{formattedDate}</div>;
       },
     },
     {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Actions' />
+        <DataTableColumnHeader column={column} title="Actions"  />
       ),
       id: "actions",
-      cell: ({ row }) => <DataTableRowActions row={row} />,
-  },
-
-  
+      cell: ({ row }) => <DataTableRowActions row={row}  />,
+    },
   ];
+  
+  
+
