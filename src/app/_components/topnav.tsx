@@ -2,6 +2,7 @@
 
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 import { ModeToggle } from "~/components/theme-toggle";
 import {
   NavigationMenu,
@@ -13,8 +14,11 @@ import {
 
 const LogoLink = ({ href }: { href: string }) => (
   <Link href={href} passHref>
-    <img
+    <Image
       src="https://utfs.io/f/ybCIypRjWKiDxSehYiysKGQ7hXMO0EpJTBmb8Wzf1crCH2et"
+      alt="OneListing Logo"
+      width={48} // Set width as needed
+      height={48} // Set height as needed
       className="h-12 w-12"
     />
   </Link>
@@ -49,11 +53,11 @@ export function TopNav() {
       </SignedOut>
       <SignedIn>
         <div className="flex flex-row p-2">
-          <LogoLink href="/dashboard" />
+          <LogoLink href="/" />
           <NavigationMenuComponent href="/dashboard" label="OneListing" />
-          <NavigationMenuComponent href="/contact" label="Contact" />
         </div>
         <div className="flex flex-row gap-4 items-center">
+          <NavigationMenuComponent href="/contact" label="Contact" />
           <ModeToggle />
           <UserButton />
         </div>
