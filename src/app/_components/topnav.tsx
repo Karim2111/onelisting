@@ -15,7 +15,7 @@ import {
 const LogoLink = ({ href }: { href: string }) => (
   <Link href={href} passHref>
     <Image
-      src="https://utfs.io/f/ybCIypRjWKiDxSehYiysKGQ7hXMO0EpJTBmb8Wzf1crCH2et"
+      src="https://liam-my.s3.us-east-2.amazonaws.com/5402392_bolt_flash_lightning_power_charge_icon.png"
       alt="OneListing Logo"
       width={48} // Set width as needed
       height={48} // Set height as needed

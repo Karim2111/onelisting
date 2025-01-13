@@ -32,7 +32,10 @@ export default async function RootLayout({
             disableTransitionOnChange
             storageKey="theme"
           >
-            <TopNav />
+            <SignedIn>
+              <TopNav />
+            </SignedIn>
+            
             {children}
             <Toaster />
           </ThemeProvider>

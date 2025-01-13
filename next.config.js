@@ -8,7 +8,8 @@ await import("./src/env.js");
 const config = {
     images: {
         remotePatterns: [
-            {hostname: "utfs.io"}
+            {hostname: "utfs.io"},
+            {hostname: "liam-my.s3.us-east-2.amazonaws.com"}
         ]
     }
 };

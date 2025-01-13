@@ -55,14 +55,18 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleEditClick}>
             <Pencil className='mr-2 h-4 w-4' />
-            Edit Details
+            List
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleEditClick}>
+            <Pencil className='mr-2 h-4 w-4' />
+            Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => setShowDeleteDialog(true)}
             className='text-red-600'
           >
             <Trash2 className='mr-2 h-4 w-4' />
-            Delete Details
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
