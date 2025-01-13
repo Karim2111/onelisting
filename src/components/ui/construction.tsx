@@ -3,6 +3,7 @@ import { Shell } from "../shells/shell";
 import Image from "next/image";
 import { SignInButton } from "@clerk/nextjs";
 import IntegrationShowcase from "./integration-showcase";
+import BetaTesterWaitlist from "./beta-tester-waitlist";
 
 export default function UnderConstruction() {
   return (
@@ -29,12 +30,8 @@ export default function UnderConstruction() {
                 </p>
                 <br/><br/>
                 <IntegrationShowcase/>
-                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Under Development
-                </p>
-                <div className="mt-6">
-                  <Construction className="h-12 w-12 mx-auto text-gray-400" />
-                </div>
+                <br/>
+                <BetaTesterWaitlist/>
                 <a
                   href="mailto:contact@onelisting.com"
                   className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-muted-foreground h-10 px-4 py-2"
@@ -42,7 +39,6 @@ export default function UnderConstruction() {
                   <Mail className="mr-2 h-4 w-4" />
                   Contact us at contact@onelisting.com
                 </a>
-                
               </div>
             </div>
           </section>

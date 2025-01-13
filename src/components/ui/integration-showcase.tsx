@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { Card, CardContent } from "~/components/ui/card"
 
@@ -57,14 +57,14 @@ export default function IntegrationShowcase() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">Our Integrations</h2>
+        <h2 className="text-3xl font-bold text-center mb-8 text-foreground">Our Integrations</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {integrations.map((integration, index) => (
             <Card 
               key={integration.name}
-              className="relative overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105"
+              className="relative overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105 bg-card"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
@@ -78,7 +78,7 @@ export default function IntegrationShowcase() {
                     className="rounded-full"
                   />
                 </div>
-                <h3 className="text-xl font-semibold text-center mb-4">{integration.name}</h3>
+                <h3 className="text-xl font-semibold text-center mb-4 text-card-foreground">{integration.name}</h3>
                 <ul className="space-y-2">
                   {integration.features.map((feature, featureIndex) => (
                     <motion.li
@@ -91,8 +91,8 @@ export default function IntegrationShowcase() {
                       }}
                       transition={{ duration: 0.3, delay: featureIndex * 0.1 }}
                     >
-                      <Check className="h-5 w-5 text-green-500" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-5 w-5 text-primary" />
+                      <span className="text-sm text-card-foreground">{feature}</span>
                     </motion.li>
                   ))}
                 </ul>
