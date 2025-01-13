@@ -9,7 +9,8 @@ const config = {
     images: {
         remotePatterns: [
             {hostname: "utfs.io"},
-            {hostname: "liam-my.s3.us-east-2.amazonaws.com"}
+            {hostname: "liam-my.s3.us-east-2.amazonaws.com"},
+            {hostname: "onelisting.s3.us-east-1.amazonaws.com"}
         ]
     }
 };

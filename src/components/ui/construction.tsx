@@ -2,6 +2,7 @@ import { Construction, Mail } from "lucide-react";
 import { Shell } from "../shells/shell";
 import Image from "next/image";
 import { SignInButton } from "@clerk/nextjs";
+import IntegrationShowcase from "./integration-showcase";
 
 export default function UnderConstruction() {
   return (
@@ -10,7 +11,7 @@ export default function UnderConstruction() {
         <main className="flex-1">
           <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
             <div className="container px-4 md:px-6">
-              <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="flex flex-col items-center space-y-2 text-center">
                 <div className="flex items-center space-x">
                   <Image
                     src="https://liam-my.s3.us-east-2.amazonaws.com/5402392_bolt_flash_lightning_power_charge_icon.png"
@@ -26,6 +27,8 @@ export default function UnderConstruction() {
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                   Crosslisting for Canadians
                 </p>
+                <br/><br/>
+                <IntegrationShowcase/>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                   Under Development
                 </p>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import { Card, CardContent } from "~/components/ui/card"
 
@@ -16,30 +16,41 @@ interface Integration {
 // Sample data - replace with your actual integrations and features
 const integrations: Integration[] = [
   {
-    name: "Company A",
-    logo: "/placeholder.svg?height=80&width=80",
-    features: ["Feature 1", "Feature 2", "Feature 3"]
+    name: "eBay",
+    logo: "https://onelisting.s3.us-east-1.amazonaws.com/ebayLogo.png",
+    features: [
+      "Cross-list to/from",
+      "Order management",
+      "Promo listing tools"
+    ]
   },
   {
-    name: "Company B",
-    logo: "/placeholder.svg?height=80&width=80",
-    features: ["Feature 1", "Feature 2", "Feature 3", "Feature 4"]
+    name: "Facebook Marketplace",
+    logo: "https://onelisting.s3.us-east-1.amazonaws.com/facebookLogo.png",
+    features: [
+      "Cross-list to/from",
+      "One-click list",
+      "Vehicle support",
+      "Home rental support"
+    ]
   },
   {
-    name: "Company C",
-    logo: "/placeholder.svg?height=80&width=80",
-    features: ["Feature 1", "Feature 2"]
+    name: "Kijiji",
+    logo: "https://onelisting.s3.us-east-1.amazonaws.com/kijijiLogo.png",
+    features: [
+      "Cross-list to/from",
+      "One-click list"
+    ]
   },
   {
-    name: "Company D",
-    logo: "/placeholder.svg?height=80&width=80",
-    features: ["Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5"]
+    name: "Nextdoor",
+    logo: "https://onelisting.s3.us-east-1.amazonaws.com/nextdoorLogo.png",
+    features: [
+      "Cross-list to/from",
+      "One-click list",
+      "Local reach focus"
+    ]
   },
-  {
-    name: "Company E",
-    logo: "/placeholder.svg?height=80&width=80",
-    features: ["Feature 1", "Feature 2", "Feature 3"]
-  }
 ]
 
 export default function IntegrationShowcase() {
@@ -49,7 +60,7 @@ export default function IntegrationShowcase() {
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-8">Our Integrations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {integrations.map((integration, index) => (
             <Card 
               key={integration.name}
