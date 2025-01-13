@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "~/components/ui/card"
 
 // Define the structure of our integration data
 interface Integration {
