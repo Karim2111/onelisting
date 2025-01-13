@@ -25,11 +25,11 @@ export default function BetaTesterWaitlist() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Join Our Beta Tester Waitlist</h2>
           <p className="text-xl mb-8">
-            We're excited to build OneListing—a tool designed to save time and simplify cross-listing for Canadian sellers. 
-            By joining our Beta Program, you'll gain early access to test our platform and shape its development with your feedback.
+            We&apos;re excited to build OneListing—a tool designed to save time and simplify cross-listing for Canadian sellers. 
+            By joining our Beta Program, you&apos;ll gain early access to test our platform and shape its development with your feedback.
           </p>
           <p className="text-lg mb-12">
-            We're aiming to start onboarding beta users in Q2 2025, and we can't wait to have you on board!
+            We&apos;re aiming to start onboarding beta users in Q2 2025, and we can&apos;t wait to have you on board!
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
