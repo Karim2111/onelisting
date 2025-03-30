@@ -11,7 +11,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectThick";
 import { Textarea } from "~/components/ui/textarea";
-import { insertListingToDb } from "~/app/dashboard/actions";
+import { insertListingToDb } from "~/server/db/listings/actions";
 import { useRouter } from "next/navigation";
 import UploadUI from "~/components/UploadUI/UploadUI";
 import TagsField from "~/components/ui/tags-component";

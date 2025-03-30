@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { desc, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import {
   index,
   pgTableCreator,
@@ -41,4 +41,22 @@ export const listings = createTable(
   (example) => ({
     titleIndex: index("name_idx").on(example.title),
   })
+);
+
+export const users = createTable(
+  "user", 
+  {
+    id: serial("id").primaryKey().notNull(),
+    email: varchar("email", { length: 256 }).notNull(),
+    name: varchar("name", { length: 128 }),
+    settings: json("settings").notNull().default(sql`'{}'::json`),
+    facebookCookies: json("facebook_cookies"),
+    kijijiCookies: json("kijiji_cookies"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  }
 );

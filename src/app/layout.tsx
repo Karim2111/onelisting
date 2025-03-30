@@ -1,17 +1,17 @@
 import "~/styles/globals.css";
-import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn } from "@clerk/nextjs";
 import { TopNav } from "./_components/topnav";
-import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "~/components/theme-provider"
-import UnderConstruction from "~/components/ui/construction";
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "OneListing",
   description: "App to list your items",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  appleWebApp: {
+    title: "OneListing", // ⬅️ this becomes: <meta name="apple-mobile-web-app-title" content="OneListing" />
+  },
 };
 
 export default async function RootLayout({

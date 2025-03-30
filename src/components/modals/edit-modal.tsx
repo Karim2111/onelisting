@@ -13,7 +13,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Listing } from "~/app/dashboard/client";
-import { updateListing } from "~/app/dashboard/actions";
+import { updateListing } from "~/server/db/listings/actions";
 import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
 import { useRouter } from "next/navigation";
 import { useState } from "react";

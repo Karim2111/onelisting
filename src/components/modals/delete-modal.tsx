@@ -13,7 +13,7 @@ import {
   } from "~/components/ui/alert-dialog";
   import {Listing} from "~/app/dashboard/client";
   import { Button } from "~/components/ui/button";
-import { deleteListing } from "~/server/queries";
+import { deleteListing } from "~/server/db/listings/queries";
   
   
   type DeleteProps = {

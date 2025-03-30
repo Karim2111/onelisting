@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Row } from "@tanstack/react-table";
+import type { Row } from "@tanstack/react-table";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { Listing } from "../client";
+import type { Listing } from "../client";
 
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import DeleteDialog from "~/components/modals/delete-modal";

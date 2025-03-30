@@ -1,7 +1,7 @@
 import { columns } from "./data-table/columns";
 import { DataTable } from "./data-table/data-table";
 import { Shell } from "../../components/shells/shell";
-import { getmyListings } from "~/server/queries";
+import { getmyListings } from "~/server/db/listings/queries";
 
 export const runtime = 'edge';
 

@@ -1,10 +1,10 @@
 "use server"
-import { db } from "./db";
+import { db } from "..";
 import { auth } from "@clerk/nextjs/server";
-import { listings } from "./db/schema";
+import { listings } from "../schema";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { Listing } from "~/app/dashboard/client";
+import type { Listing } from "~/app/dashboard/client";
 
 export async function getmyListings(): Promise<Listing[]> {
   const user = await auth();
