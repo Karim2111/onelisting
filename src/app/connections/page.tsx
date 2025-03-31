@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { SignedIn, SignedOut } from "@clerk/nextjs"
-import { getUserConnections, disconnectMarketplace, connectMarketplace } from "~/server/db/users/actions"
+import { getUserConnections, disconnectMarketplace, connectMarketplace } from "./actions"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -16,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog"
 import { Textarea } from "~/components/ui/textarea"
 import { sitesInfo } from "~/lib/sitesInfo"
@@ -76,7 +75,7 @@ export default function ConnectionsPage() {
 
     try {
       await connectMarketplace(selectedMarketplace, cookies);
-      setMarketplaces(marketplaces.map(marketplace =>
+      setMarketplaces(prev => prev.map(marketplace =>
         marketplace.id === selectedMarketplace ? { ...marketplace, connected: true } : marketplace
       ));
       toast.success(`Connected to ${selectedMarketplace}`);

@@ -9,7 +9,7 @@ export default function UnderConstruction() {
   return (
     <Shell variant="centered">
       <div className="flex flex-col min-h-[100dvh]">
-        <main className="flex-1">``
+        <main className="flex-1">
           <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
             <div className="container px-4 md:px-6">
               <div className="flex flex-col items-center space-y-2 text-center">

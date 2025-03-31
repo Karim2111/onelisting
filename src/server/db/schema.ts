@@ -10,6 +10,8 @@ import {
   varchar,
   json,
   integer,
+  boolean,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -43,21 +45,23 @@ export const listings = createTable(
   })
 );
 
-export const users = createTable(
-  "user", 
+export const sessions = createTable(
+  "session",
   {
     id: serial("id").primaryKey().notNull(),
-    clerkId: varchar("clerk_id", { length: 256 }).notNull().unique(),
-    email: varchar("email", { length: 256 }).notNull(),
-    name: varchar("name", { length: 128 }),
-    settings: json("settings").notNull().default(sql`'{}'::json`),
-    facebookCookies: json("facebook_cookies"),
-    kijijiCookies: json("kijiji_cookies"),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  }
+    userId: varchar("user_id", { length: 256 }).notNull(),
+    platform: varchar("platform", { length: 128 }).notNull(),
+    cookies: json("cookies"),
+    createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    ipAddress: varchar("ip_address", { length: 128 }),
+    userAgent: varchar("user_agent", { length: 128 }),
+    lastActive: timestamp("last_active", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    isSessionValid: boolean("is_session_valid").notNull().default(true),
+    proxyIp: varchar("proxy_ip", { length: 128 }),
+    profileId: varchar("profile_id", { length: 256 }),
+  },
+  (session) => ({
+    uniqueUserPlatform: uniqueIndex("user_platform_idx").on(session.userId, session.platform), 
+  })
 );

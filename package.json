@@ -35,6 +35,7 @@
     "@tanstack/react-table": "^8.20.5",
     "@uploadthing/react": "^7.1.0",
     "@vercel/postgres": "^0.10.0",
+    "axios": "^1.8.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
