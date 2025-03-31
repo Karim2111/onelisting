@@ -21,8 +21,6 @@ export const env = createEnv({
     // Clerk Auth
     CLERK_SECRET_KEY: z.string().startsWith('sk_'),
 
-    // Facebook
-    FACEBOOK_APP_ID: z.string(),
 
     // Upload Thing
     UPLOADTHING_APP_ID: z.string(),
@@ -66,9 +64,6 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL,
-
-    // Facebook
-    FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID,
 
     // Upload Thing
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,

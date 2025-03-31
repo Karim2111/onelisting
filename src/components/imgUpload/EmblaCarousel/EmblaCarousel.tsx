@@ -1,5 +1,5 @@
 import React from 'react'
-import { EmblaOptionsType } from 'embla-carousel'
+import type { EmblaOptionsType } from 'embla-carousel'
 import useEmblaCarousel from 'embla-carousel-react'
 import ClassNames from 'embla-carousel-class-names'
 import {
@@ -8,9 +8,8 @@ import {
   usePrevNextButtons
 } from './EmblaCarouselArrowButtons'
 import { DotButton, useDotButton } from './EmblaCarouselDotButton'
-import { Button } from '~/components/ui/button'
-import { ImgType } from '~/components/UploadUI/UploadUI'
-
+import type { ImgType } from '~/components/UploadUI/UploadUI'
+import Image from 'next/image'
 type PropType = {
   slides: ImgType[]
   options?: EmblaOptionsType
@@ -48,7 +47,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
         <div className="embla__container">
           {slides.map((img) => (
             <div className="embla__slide embla__class-names" key={img.id}>
-              <img
+              <Image
                 className="embla__slide__img"
                 src={img.src}
                 alt="Your alt text"

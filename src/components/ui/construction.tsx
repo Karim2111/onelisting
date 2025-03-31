@@ -1,4 +1,4 @@
-import { Construction, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Shell } from "../shells/shell";
 import Image from "next/image";
 import { SignInButton } from "@clerk/nextjs";

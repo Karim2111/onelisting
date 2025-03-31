@@ -2,11 +2,11 @@
 import {
   closestCorners,
   DndContext,
-  DragEndEvent,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
-  UniqueIdentifier,
+  type UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import "./Upload-UI.css";
 import { ImgRow } from "../imgUpload/imgRow/imgRow";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { EmblaOptionsType } from "embla-carousel";
+import type { EmblaOptionsType } from "embla-carousel";
 import "src/components/imgUpload/EmblaCarousel/css/embla.css";
 import EmblaCarousel from "~/components/imgUpload/EmblaCarousel/EmblaCarousel";
 import { Button } from "~/components/ui/button";
@@ -169,7 +169,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           <Button
             variant="outline"
             size="default"
-            className="w-full max-w-48 max-w-xs"
+            className="w-full max-w-xs"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById("file-upload")?.click();

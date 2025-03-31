@@ -1,5 +1,5 @@
 import React from "react";
-import { InputProps } from "~/components/ui/input";
+import type { InputProps } from "~/components/ui/input";
 import { cn } from "~/lib/utils"
 
 

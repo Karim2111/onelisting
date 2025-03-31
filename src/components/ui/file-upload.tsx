@@ -3,8 +3,8 @@
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import {
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   createContext,
   forwardRef,
   useCallback,
@@ -15,9 +15,9 @@ import {
 } from "react";
 import {
   useDropzone,
-  DropzoneState,
-  FileRejection,
-  DropzoneOptions,
+  type DropzoneState,
+  type FileRejection,
+  type DropzoneOptions,
 } from "react-dropzone";
 import { toast } from "sonner";
 import { Trash2 as RemoveIcon } from "lucide-react";

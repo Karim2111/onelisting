@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, KeyboardEvent, ChangeEvent, FocusEvent, useEffect } from 'react';
+import { useState, type KeyboardEvent, type ChangeEvent, type FocusEvent, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 

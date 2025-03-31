@@ -10,6 +10,7 @@ import { Badge } from "~/components/ui/badge"
 import { SignedIn, SignedOut } from "@clerk/nextjs"
 import { getUserConnections, disconnectMarketplace, connectMarketplace } from "./actions"
 import { toast } from "sonner"
+import { formatTimeAgo } from "~/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -20,11 +21,21 @@ import {
 import { Textarea } from "~/components/ui/textarea"
 import { sitesInfo } from "~/lib/sitesInfo"
 
+type MarketplaceConnection = {
+  connected: boolean;
+  createdAt: string | null;
+}
+
+type MarketplaceConnections = {
+  [K in 'facebook' | 'kijiji']: MarketplaceConnection;
+}
+
 type Marketplace = {
   id: 'facebook' | 'kijiji'
   name: string
   logo: React.ReactNode
   connected: boolean
+  createdAt?: Date
 }
 
 export default function ConnectionsPage() {
@@ -52,10 +63,14 @@ export default function ConnectionsPage() {
     const loadConnections = async () => {
       try {
         const connections = await getUserConnections();
-        setMarketplaces(prev => prev.map(marketplace => ({
-          ...marketplace,
-          connected: connections[marketplace.id]
-        })));
+        setMarketplaces(prev => prev.map(marketplace => {
+          const connection = connections[marketplace.id];
+          return {
+            ...marketplace,
+            connected: connection.connected,
+            createdAt: connection.createdAt ? new Date(connection.createdAt) : undefined,
+          } satisfies Marketplace;
+        }));
       } catch (error) {
         console.error('Failed to load connections:', error);
         toast.error('Failed to load marketplace connections');
@@ -75,9 +90,26 @@ export default function ConnectionsPage() {
 
     try {
       await connectMarketplace(selectedMarketplace, cookies);
-      setMarketplaces(prev => prev.map(marketplace =>
-        marketplace.id === selectedMarketplace ? { ...marketplace, connected: true } : marketplace
-      ));
+      
+      // Load fresh data
+      const loadConnections = async () => {
+        try {
+          const connections = await getUserConnections();
+          setMarketplaces(prev => prev.map(marketplace => {
+            const connection = connections[marketplace.id];
+            return {
+              ...marketplace,
+              connected: connection.connected,
+              createdAt: connection.createdAt ? new Date(connection.createdAt) : undefined,
+            } satisfies Marketplace;
+          }));
+        } catch (error) {
+          console.error('Failed to load connections:', error);
+          toast.error('Failed to load marketplace connections');
+        }
+      };
+      
+      void loadConnections();
       toast.success(`Connected to ${selectedMarketplace}`);
       setIsOpen(false);
       setCookies('');
@@ -149,9 +181,9 @@ export default function ConnectionsPage() {
                     <Badge variant={marketplace.connected ? "default" : "outline"} className="mt-2">
                       {marketplace.connected ? "Connected" : "Not Connected"}
                     </Badge>
-                    {marketplace.connected && (
+                    {marketplace.connected && marketplace.createdAt && (
                       <Badge variant="outline" className="mt-2">
-                        Last sync: 2 hours ago
+                        Updated {formatTimeAgo(new Date(marketplace.createdAt))}
                       </Badge>
                     )}
                   </div>

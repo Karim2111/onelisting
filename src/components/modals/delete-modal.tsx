@@ -11,7 +11,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
   } from "~/components/ui/alert-dialog";
-  import {Listing} from "~/app/dashboard/client";
+  import type {Listing} from "~/app/dashboard/client";
   import { Button } from "~/components/ui/button";
 import { deleteListing } from "~/server/db/listings/queries";
   

@@ -12,11 +12,9 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Listing } from "~/app/dashboard/client";
+import type {Listing} from "~/app/dashboard/client";
 import { updateListing } from "~/server/db/listings/actions";
 import { useToast } from "src/hooks/use-toast"; // From shadcn/ui
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { FloatingInput, FloatingTextarea } from "../ui/inputsLight";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/selectThick";
 
