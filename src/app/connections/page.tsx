@@ -2,12 +2,13 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import { Facebook, Plus, RefreshCw, X } from "lucide-react"
+import { Plus, RefreshCw, X } from "lucide-react"
+import Image from "next/image"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { SignedIn, SignedOut } from "@clerk/nextjs"
-import { getUserConnections, disconnectMarketplace, connectMarketplace, type MarketplaceConnections } from "~/server/db/users/actions"
+import { getUserConnections, disconnectMarketplace, connectMarketplace } from "~/server/db/users/actions"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -18,6 +19,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { Textarea } from "~/components/ui/textarea"
+import { sitesInfo } from "~/lib/sitesInfo"
 
 type Marketplace = {
   id: 'facebook' | 'kijiji'
@@ -31,17 +33,13 @@ export default function ConnectionsPage() {
     {
       id: "facebook",
       name: "Facebook Marketplace",
-      logo: <Facebook className="h-8 w-8 text-blue-600" />,
+      logo: <Image src={sitesInfo.fb.iconUrl} alt="Facebook Marketplace icon" className="h-8 w-8 text-blue-600 rounded-full" width={32} height={32} />,
       connected: false,
     },
     {
       id: "kijiji",
       name: "Kijiji",
-      logo: (
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-600 text-white">
-          <span className="font-bold">K</span>
-        </div>
-      ),
+      logo: <Image src={sitesInfo.kj.iconUrl} alt="Kijiji icon" className="h-8 w-8 text-blue-600 rounded-full" width={32} height={32} />,
       connected: false,
     },
   ])
@@ -55,7 +53,7 @@ export default function ConnectionsPage() {
     const loadConnections = async () => {
       try {
         const connections = await getUserConnections();
-        setMarketplaces(marketplaces.map(marketplace => ({
+        setMarketplaces(prev => prev.map(marketplace => ({
           ...marketplace,
           connected: connections[marketplace.id]
         })));
@@ -65,7 +63,7 @@ export default function ConnectionsPage() {
       }
     };
     
-    loadConnections();
+    void loadConnections();
   }, []);
 
   const handleConnect = async (id: 'facebook' | 'kijiji') => {
@@ -195,7 +193,7 @@ export default function ConnectionsPage() {
               </div>
               <h3 className="text-lg font-medium">More Platforms Coming Soon</h3>
               <p className="mt-2 text-center text-sm text-muted-foreground">
-                We're working on adding more marketplace integrations.
+                We&apos;re working on adding more marketplace integrations.
               </p>
               <Button variant="outline" className="mt-4">
                 Request a Platform

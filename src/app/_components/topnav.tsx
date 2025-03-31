@@ -15,13 +15,27 @@ import {
 const LogoLink = ({ href }: { href: string }) => (
   <Link href={href} passHref>
     <Image
-      src="https://liam-my.s3.us-east-2.amazonaws.com/5402392_bolt_flash_lightning_power_charge_icon.png"
+      src="/icon0.svg"
       alt="OneListing Logo"
-      width={48} // Set width as needed
-      height={48} // Set height as needed
-      className="h-12 w-12"
+      width={32}
+      height={32}
+      className="h-8 w-8"
     />
   </Link>
+);
+
+const BrandLink = ({ href, label }: { href: string; label: string }) => (
+  <NavigationMenu>
+    <NavigationMenuList>
+      <NavigationMenuItem>
+        <Link href={href} passHref>
+          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} font-montserrat font-bold tracking-tight text-2xl hover:text-primary`}>
+            {label}
+          </NavigationMenuLink>
+        </Link>
+      </NavigationMenuItem>
+    </NavigationMenuList>
+  </NavigationMenu>
 );
 
 const NavigationMenuComponent = ({ href, label }: { href: string; label: string }) => (
@@ -40,11 +54,11 @@ const NavigationMenuComponent = ({ href, label }: { href: string; label: string 
 
 export function TopNav() {
   return (
-    <nav className="flex w-full items-center justify-between border-b p-4 text-xl font-semibold">
+    <nav className="flex w-full items-center justify-between border-b p-4">
       <SignedOut>
-        <div className="flex flex-row space-x-2.5">
+        <div className="flex flex-row items-center space-x-1">
           <LogoLink href="/" />
-          <NavigationMenuComponent href="/" label="OneListing" />
+          <BrandLink href="/" label="OneListing" />
           <NavigationMenuComponent href="/contact" label="Contact" />
         </div>
         <div className="flex flex-row gap-4 items-center">
@@ -52,9 +66,9 @@ export function TopNav() {
         </div>
       </SignedOut>
       <SignedIn>
-        <div className="flex flex-row p-2">
+        <div className="flex flex-row items-center space-x-1">
           <LogoLink href="/" />
-          <NavigationMenuComponent href="/dashboard" label="OneListing" />
+          <BrandLink href="/dashboard" label="OneListing" />
         </div>
         <div className="flex flex-row gap-4 items-center">
           <NavigationMenuComponent href="/contact" label="Contact" />

@@ -1,5 +1,6 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import { GeistSans } from 'geist/font/sans'
 
 export default {
   darkMode: ["class"],
@@ -7,7 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["'Open Sans'", ...fontFamily.sans],
+        sans: ["var(--font-inter)", ...fontFamily.sans],
+        montserrat: ["var(--font-montserrat)", ...fontFamily.sans],
       },
       borderRadius: {
         lg: 'var(--radius)',

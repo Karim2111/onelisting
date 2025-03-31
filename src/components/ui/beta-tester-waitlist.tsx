@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { ArrowRight, Bug, Lightbulb, MessageSquare } from 'lucide-react'
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
@@ -15,15 +15,11 @@ const betaTesterQualities = [
 export default function BetaTesterWaitlist() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
-  const handleSignup = () => {
-    window.open('https://2xcpflvlkrm.typeform.com/to/g8rK1UWz', '_blank')
-  }
-
   return (
     <section className="py-16 bg-background text-foreground">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Join Our Beta Tester Waitlist</h2>
+          <h2 className="text-4xl font-bold mb-6 font-montserrat">Join Our Beta Tester Waitlist</h2>
           <p className="text-xl mb-8">
             We&apos;re excited to build OneListing—a tool designed to save time and simplify cross-listing for Canadian sellers. 
             By joining our Beta Program, you&apos;ll gain early access to test our platform and shape its development with your feedback.
@@ -36,7 +32,7 @@ export default function BetaTesterWaitlist() {
             {betaTesterQualities.map((quality, index) => (
               <Card 
                 key={index}
-                className="relative overflow-hidden"
+                className="relative overflow-hidden border-primary/20"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
@@ -51,7 +47,7 @@ export default function BetaTesterWaitlist() {
                   </motion.div>
                 </CardContent>
                 <motion.div
-                  className="absolute inset-0 bg-primary/10"
+                  className="absolute inset-0 bg-primary/5"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: hoveredIndex === index ? 1 : 0 }}
                   transition={{ duration: 0.3 }}
@@ -65,15 +61,20 @@ export default function BetaTesterWaitlist() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <a
-              href="https://2xcpflvlkrm.typeform.com/to/g8rK1UWz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-muted-foreground h-10 px-4 py-2"
+            <Button
+              asChild
+              size="lg"
+              className="font-semibold"
             >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              Join the Beta Tester Waitlist
-            </a>
+              <a
+                href="https://2xcpflvlkrm.typeform.com/to/g8rK1UWz"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Join the Beta Tester Waitlist
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
           </motion.div>
           
           <p className="mt-8 text-sm text-muted-foreground">

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { Card, CardContent } from "~/components/ui/card"
+import { sitesInfo } from "~/lib/sitesInfo"
 
 // Define the structure of our integration data
 interface Integration {
@@ -17,7 +18,7 @@ interface Integration {
 const integrations: Integration[] = [
   {
     name: "eBay",
-    logo: "https://onelisting.s3.us-east-1.amazonaws.com/ebayLogo.png",
+    logo: sitesInfo.eb.iconUrl,
     features: [
       "Cross-list to/from",
       "Order management",
@@ -26,7 +27,7 @@ const integrations: Integration[] = [
   },
   {
     name: "Facebook Marketplace",
-    logo: "https://onelisting.s3.us-east-1.amazonaws.com/facebookLogo.png",
+    logo: sitesInfo.fb.iconUrl,
     features: [
       "Cross-list to/from",
       "One-click list",
@@ -36,7 +37,7 @@ const integrations: Integration[] = [
   },
   {
     name: "Kijiji",
-    logo: "https://onelisting.s3.us-east-1.amazonaws.com/kijijiLogo.png",
+    logo: sitesInfo.kj.iconUrl,
     features: [
       "Cross-list to/from",
       "One-click list"
@@ -44,7 +45,7 @@ const integrations: Integration[] = [
   },
   {
     name: "Nextdoor",
-    logo: "https://onelisting.s3.us-east-1.amazonaws.com/nextdoorLogo.png",
+    logo: sitesInfo.nd.iconUrl,
     features: [
       "Cross-list to/from",
       "One-click list",
@@ -59,24 +60,25 @@ export default function IntegrationShowcase() {
   return (
     <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8 text-foreground">Our Integrations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <h2 className="text-3xl font-bold text-center mb-8 text-foreground font-montserrat">Supported Marketplaces</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {integrations.map((integration, index) => (
             <Card 
               key={integration.name}
-              className="relative overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105 bg-card"
+              className="relative overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105 bg-card border-primary/20"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
               <CardContent className="p-6">
                 <div className="flex justify-center mb-4">
-                  <Image
-                    src={integration.logo}
-                    alt={`${integration.name} logo`}
-                    width={80}
-                    height={80}
-                    className="rounded-full"
-                  />
+                  <div className="relative w-16 h-16">
+                    <Image
+                      src={integration.logo}
+                      alt={`${integration.name} logo`}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
                 <h3 className="text-xl font-semibold text-center mb-4 text-card-foreground">{integration.name}</h3>
                 <ul className="space-y-2">

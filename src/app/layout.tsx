@@ -1,10 +1,17 @@
 import "~/styles/globals.css";
+import { Inter, Montserrat } from "next/font/google";
 import { ClerkProvider, SignedIn } from "@clerk/nextjs";
 import { TopNav } from "./_components/topnav";
 import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "~/components/theme-provider"
 import { cookies } from "next/headers";
+
+const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({ 
+  subsets: ["latin"],
+  variable: '--font-montserrat',
+});
 
 export const metadata: Metadata = {
   title: "OneListing",
@@ -23,8 +30,8 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
-      <html lang="en" className={theme} suppressHydrationWarning>
-        <body className="font-sans bold" suppressHydrationWarning>
+      <html lang="en" className={`${theme} ${montserrat.variable}`} suppressHydrationWarning>
+        <body className={`${inter.className} font-sans`} suppressHydrationWarning>
           <ThemeProvider
             attribute="class"
             defaultTheme={theme}

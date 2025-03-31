@@ -9,19 +9,19 @@ export default function UnderConstruction() {
   return (
     <Shell variant="centered">
       <div className="flex flex-col min-h-[100dvh]">
-        <main className="flex-1">
+        <main className="flex-1">``
           <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
             <div className="container px-4 md:px-6">
               <div className="flex flex-col items-center space-y-2 text-center">
                 <div className="flex items-center space-x">
                   <Image
-                    src="https://liam-my.s3.us-east-2.amazonaws.com/5402392_bolt_flash_lightning_power_charge_icon.png"
+                    src="/icon0.svg"
                     alt="OneListing Logo"
-                    width={200} // Adjust size if needed
-                    height={200}
-                    className="h-20 w-20"
+                    width={175} // Adjust size if needed
+                    height={175}
+                    className="h-16 w-16 p-1 md:h-20 md:w-20 md:p-2 lg:h-24 lg:w-24 lg:p-3"
                   />
-                  <h2 className="text-xl font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+                  <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                     OneListing
                   </h2>
                 </div>
