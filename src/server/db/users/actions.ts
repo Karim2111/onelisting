@@ -7,6 +7,69 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import type { PostgresError } from 'postgres';
 
+export type MarketplaceConnections = {
+  facebook: boolean;
+  kijiji: boolean;
+}
+
+// Get user's marketplace connections
+export async function getUserConnections(): Promise<MarketplaceConnections> {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const dbUser = await db.query.users.findFirst({
+    where: eq(users.clerkId, user.id),
+  });
+
+  return {
+    facebook: !!dbUser?.facebookCookies,
+    kijiji: !!dbUser?.kijijiCookies,
+  };
+}
+
+// Connect a marketplace by saving cookies
+export async function connectMarketplace(marketplace: 'facebook' | 'kijiji', cookies: string) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    await db.update(users)
+      .set({
+        [marketplace === 'facebook' ? 'facebookCookies' : 'kijijiCookies']: cookies,
+      })
+      .where(eq(users.clerkId, user.id));
+    
+    return { success: true };
+  } catch (error) {
+    console.error(`Error connecting ${marketplace}:`, error);
+    throw new Error(`Failed to connect ${marketplace}`);
+  }
+}
+
+// Disconnect a marketplace by clearing its cookies
+export async function disconnectMarketplace(marketplace: 'facebook' | 'kijiji') {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    await db.update(users)
+      .set({
+        [marketplace === 'facebook' ? 'facebookCookies' : 'kijijiCookies']: null,
+      })
+      .where(eq(users.clerkId, user.id));
+    
+    return { success: true };
+  } catch (error) {
+    console.error(`Error disconnecting ${marketplace}:`, error);
+    throw new Error(`Failed to disconnect ${marketplace}`);
+  }
+}
 
 // Test user object logging in console
 export default async function addUserToDb() {
