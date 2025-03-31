@@ -47,6 +47,7 @@ export const users = createTable(
   "user", 
   {
     id: serial("id").primaryKey().notNull(),
+    clerkId: varchar("clerk_id", { length: 256 }).notNull().unique(),
     email: varchar("email", { length: 256 }).notNull(),
     name: varchar("name", { length: 128 }),
     settings: json("settings").notNull().default(sql`'{}'::json`),
