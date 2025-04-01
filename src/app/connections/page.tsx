@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import { Plus, RefreshCw, X } from "lucide-react"
+import { ArrowLeftToLine, Plus, RefreshCw, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
@@ -20,6 +20,7 @@ import {
 } from "~/components/ui/dialog"
 import { Textarea } from "~/components/ui/textarea"
 import { sitesInfo } from "~/lib/sitesInfo"
+import Link from "next/link"
 
 type MarketplaceConnection = {
   connected: boolean;
@@ -158,15 +159,20 @@ export default function ConnectionsPage() {
           </DialogContent>
         </Dialog>
 
-        <div className="container mx-auto py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">Marketplace Connections</h1>
-            <p className="text-muted-foreground mt-2">
-              Connect your marketplace accounts to crosslist your products automatically.
-            </p>
+        <div className="container px-6 sm:px-8 lg:px-10 py-8 mx-auto">
+          <div className="flex flex-row justify-between">
+            <div className="mb-8 plr-2">
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Marketplace Connections</h1>
+              <p className="text-muted-foreground mt-2">
+                Connect your marketplace accounts to crosslist your products automatically.
+              </p>
+            </div>
+            <Button asChild variant={"default"}><Link href="/dashboard">
+              <ArrowLeftToLine className="h-4 w-6 mr-2" /> Dashboard
+            </Link></Button>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 lg:gap-4 xl:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-auto">
             {marketplaces.map((marketplace) => (
               <Card key={marketplace.id} className="overflow-hidden">
                 <CardHeader className="flex flex-row items-center gap-4 pb-2">
@@ -177,7 +183,7 @@ export default function ConnectionsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-2">
+                  <div className="flex justify-between">
                     <Badge variant={marketplace.connected ? "default" : "outline"} className="mt-2">
                       {marketplace.connected ? "Connected" : "Not Connected"}
                     </Badge>

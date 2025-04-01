@@ -12,10 +12,10 @@ export default async function TaskPage() {
   const listings = await getmyListings();
   return (
     <Shell variant={"centered"}>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-4xl font-bold text-primary">My OneListing Dashboard</h1>
+      <div className="flex items-center justify-between mb-2 md:mb-4 xl:mb-6">
+        <h1 className="text-2xl md:text-4xl font-bold text--foreground">Dashboard</h1>
         <div className="flex gap-2">
-          <Button asChild>
+          <Button asChild variant="default">
             <Link href="/create-listing">
               <Plus className="h-4 w-4 mr-2" />
               Create Listing
@@ -29,11 +29,8 @@ export default async function TaskPage() {
           </Button>
         </div>
       </div>
-      <div className="hidden md:block">
+      <div className=" md:block">
         <DataTable data={listings} columns={columns} />
-      </div>
-      <div className="md:hidden">
-        <h1 className="text-2xl font-bold text-primary">New table</h1>
       </div>
     </Shell>
   );

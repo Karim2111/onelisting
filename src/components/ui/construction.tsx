@@ -17,11 +17,11 @@ export default function UnderConstruction() {
                   <Image
                     src="/icon0.svg"
                     alt="OneListing Logo"
-                    width={175} // Adjust size if needed
-                    height={175}
+                    width={256} // Adjust size if needed
+                    height={256}
                     className="h-16 w-16 p-1 md:h-20 md:w-20 md:p-2 lg:h-24 lg:w-24 lg:p-3"
                   />
-                  <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+                  <h2 className="font-bold tracking-tight text-4xl md:text-5xl">
                     OneListing
                   </h2>
                 </div>

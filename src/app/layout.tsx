@@ -16,8 +16,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "OneListing",
   description: "App to list your items",
-  appleWebApp: {
-    title: "OneListing", // ⬅️ this becomes: <meta name="apple-mobile-web-app-title" content="OneListing" />
+  appleWebApp: { // https://nextjs.org/docs/app/api-reference/functions/generate-metadata#applewebapp
+    title: 'OneListing',
+    statusBarStyle: 'black-translucent',
   },
 };
 

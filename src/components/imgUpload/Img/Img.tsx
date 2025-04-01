@@ -2,7 +2,8 @@ import React from "react";
 import "./Img.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { UniqueIdentifier } from "@dnd-kit/core";
+import type { UniqueIdentifier } from "@dnd-kit/core";
+import Image from "next/image";
 
 interface ImgProps {
     id: UniqueIdentifier;
@@ -24,7 +25,7 @@ export const Img: React.FC<ImgProps> = ({ id, src }) => {
             style={style}
             className="img-container"
         >
-            <img className="img" src={src} alt={`Image ${id}`} />
+            <Image className="img" src={src} alt={`Image ${id}`} />
         </div>
     );
 };

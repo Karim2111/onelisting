@@ -1,5 +1,6 @@
-import { SignedOut } from "@clerk/nextjs";
+import { SignedOut, SignedIn } from "@clerk/nextjs";
 import UnderConstruction from "~/components/ui/construction";
+import { redirect } from 'next/navigation'
 
 export default function HomePage() {
   return (
@@ -7,6 +8,9 @@ export default function HomePage() {
       <SignedOut>
         <UnderConstruction/>
       </SignedOut>
+      <SignedIn>
+        {redirect('/dashboard')}
+      </SignedIn>
     </main>
   );
 }
