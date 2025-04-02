@@ -7,6 +7,7 @@ import { ThemeProvider } from "~/components/theme-provider"
 import { cookies } from "next/headers";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { Analytics } from "@vercel/analytics/react"
 
 
 export const metadata: Metadata = {
@@ -263,6 +264,7 @@ export default async function RootLayout({
             {children}
             <Toaster />
           </ThemeProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

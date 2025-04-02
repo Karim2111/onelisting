@@ -29,6 +29,10 @@ export const env = createEnv({
 
     // Node
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+
+    // Automation Worker
+    AUTOMATION_WORKER_URL: z.string().url(),
+    INTERNAL_API_KEY: z.string(),
   },
 
   /**
@@ -72,6 +76,10 @@ export const env = createEnv({
 
     // Node
     NODE_ENV: process.env.NODE_ENV,
+
+    // Automation Worker
+    AUTOMATION_WORKER_URL: process.env.AUTOMATION_WORKER_URL,
+    INTERNAL_API_KEY: process.env.INTERNAL_API_KEY,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
