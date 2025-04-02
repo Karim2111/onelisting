@@ -21,15 +21,8 @@ import {
 import { Textarea } from "~/components/ui/textarea"
 import { sitesInfo } from "~/lib/sitesInfo"
 import Link from "next/link"
+import { Shell } from "~/components/shells/shell"
 
-type MarketplaceConnection = {
-  connected: boolean;
-  createdAt: string | null;
-}
-
-type MarketplaceConnections = {
-  [K in 'facebook' | 'kijiji']: MarketplaceConnection;
-}
 
 type Marketplace = {
   id: 'facebook' | 'kijiji'
@@ -134,7 +127,7 @@ export default function ConnectionsPage() {
   };
 
   return (
-    <main>
+    <Shell variant={"centered"}>
       <SignedOut>
       </SignedOut>
       <SignedIn>
@@ -239,7 +232,7 @@ export default function ConnectionsPage() {
           </div>
         </div>
       </SignedIn>
-    </main>
+    </Shell>
   )
 }
 

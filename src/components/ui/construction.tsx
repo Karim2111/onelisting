@@ -4,6 +4,7 @@ import Image from "next/image";
 import { SignInButton } from "@clerk/nextjs";
 import IntegrationShowcase from "./integration-showcase";
 import BetaTesterWaitlist from "./beta-tester-waitlist";
+import { Button } from "./button";
 
 export default function UnderConstruction() {
   return (
@@ -32,13 +33,12 @@ export default function UnderConstruction() {
                 <IntegrationShowcase/>
                 <br/>
                 <BetaTesterWaitlist/>
-                <a
-                  href="mailto:contact@onelisting.com"
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-muted-foreground h-10 px-4 py-2"
-                >
+                <Button asChild> 
+                  <a href="mailto:contact@onelisting.ca">
                   <Mail className="mr-2 h-4 w-4" />
-                  Contact us at contact@onelisting.com
-                </a>
+                  contact@onelisting.ca
+                  </a>
+                </Button>
               </div>
             </div>
           </section>

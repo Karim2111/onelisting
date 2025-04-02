@@ -1,6 +1,7 @@
 {
   "name": "OneListing",
-  "short_name": "Listings",
+  "description" : "Crosslisting for Canadians",
+  "short_name": "OneListing",
   "icons": [
     {
       "src": "/fvcn/web-app-manifest-192x192.png",

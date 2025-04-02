@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Bug, Lightbulb, MessageSquare } from 'lucide-react'
+import { Bug, Lightbulb, MessageSquare } from 'lucide-react'
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
+import { PersonIcon } from '@radix-ui/react-icons'
 
 const betaTesterQualities = [
   { icon: Bug, text: "Find and report bugs" },
@@ -19,7 +20,7 @@ export default function BetaTesterWaitlist() {
     <section className="py-16 bg-background text-foreground">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6 font-montserrat">Join Our Beta Tester Waitlist</h2>
+          <h2 className="text-4xl font-bold mb-6">Join Our Beta Tester Waitlist</h2>
           <p className="text-xl mb-8">
             We&apos;re excited to build OneListing—a tool designed to save time and simplify cross-listing for Canadian sellers. 
             By joining our Beta Program, you&apos;ll gain early access to test our platform and shape its development with your feedback.
@@ -62,8 +63,7 @@ export default function BetaTesterWaitlist() {
             whileTap={{ scale: 0.95 }}
           >
             <Button
-              asChild
-              size="lg"
+              asChild             
               className="font-semibold"
             >
               <a
@@ -71,8 +71,8 @@ export default function BetaTesterWaitlist() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Join the Beta Tester Waitlist
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <PersonIcon className="ml-2 h-4 w-4" />Join the Beta Tester Waitlist
+                
               </a>
             </Button>
           </motion.div>

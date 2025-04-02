@@ -12,9 +12,9 @@ export default async function TaskPage() {
   const listings = await getmyListings();
   return (
     <Shell variant={"centered"}>
-      <div className="flex items-center justify-between mb-2 md:mb-4 xl:mb-6">
-        <h1 className="text-2xl md:text-4xl font-bold text--foreground">Dashboard</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row items-center justify-start sm:justify-between mb-2 md:mb-4 xl:mb-6">
+        <h1 className="text-2xl sm:text-4xl xl:text-5xl font-bold text-foreground">Dashboard</h1>
+        <div className="flex gap-2 flex-row mt-4 sm:mt-0 ">
           <Button asChild variant="default">
             <Link href="/create-listing">
               <Plus className="h-4 w-4 mr-2" />
@@ -29,7 +29,7 @@ export default async function TaskPage() {
           </Button>
         </div>
       </div>
-      <div className=" md:block">
+      <div className="">
         <DataTable data={listings} columns={columns} />
       </div>
     </Shell>

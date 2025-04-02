@@ -1,16 +1,17 @@
-import { SignedOut, SignedIn } from "@clerk/nextjs";
+
 import UnderConstruction from "~/components/ui/construction";
 import { redirect } from 'next/navigation'
+import { auth } from "@clerk/nextjs/server";
+export default async function HomePage() {
+  const { userId } = await auth();
+  
+  if (userId) {
+    redirect('/dashboard');
+  }
 
-export default function HomePage() {
   return (
     <main className="min-h-screen bg-background">
-      <SignedOut>
-        <UnderConstruction/>
-      </SignedOut>
-      <SignedIn>
-        {redirect('/dashboard')}
-      </SignedIn>
+      <UnderConstruction />
     </main>
   );
 }

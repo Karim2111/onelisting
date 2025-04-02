@@ -28,11 +28,9 @@ const BrandLink = ({ href, label }: { href: string; label: string }) => (
   <NavigationMenu>
     <NavigationMenuList>
       <NavigationMenuItem>
-        <Link href={href} passHref>
-          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} font-montserrat font-bold tracking-tight text-2xl hover:text-primary`}>
+          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} font-bold tracking-tight text-2xl hover:text-primary`} href={href}>
             {label}
           </NavigationMenuLink>
-        </Link>
       </NavigationMenuItem>
     </NavigationMenuList>
   </NavigationMenu>
@@ -42,11 +40,10 @@ const NavigationMenuComponent = ({ href, label }: { href: string; label: string 
   <NavigationMenu>
     <NavigationMenuList>
       <NavigationMenuItem>
-        <Link href={href} passHref>
-          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-            {label}
-          </NavigationMenuLink>
-        </Link>
+        <NavigationMenuLink className={navigationMenuTriggerStyle()} href={href}
+        >
+          {label}
+        </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>
   </NavigationMenu>
@@ -67,7 +64,7 @@ export function TopNav() {
       </SignedOut>
       <SignedIn>
         <div className="flex flex-row items-center space-x-1">
-          <LogoLink href="/" />
+          <LogoLink href="/dashboard" />
           <BrandLink href="/dashboard" label="OneListing" />
         </div>
         <div className="flex flex-row gap-4 items-center">
