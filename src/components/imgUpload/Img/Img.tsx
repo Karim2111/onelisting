@@ -25,7 +25,14 @@ export const Img: React.FC<ImgProps> = ({ id, src }) => {
             style={style}
             className="img-container"
         >
-            <Image className="img" src={src} alt={`Image ${id}`} />
+            <Image 
+                className="img" 
+                src={src} 
+                alt={`Image ${id}`} 
+                width={300}
+                height={300}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
         </div>
     );
 };

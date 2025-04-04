@@ -26,7 +26,12 @@ import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
 export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
-const OPTIONS: EmblaOptionsType = { loop: false };
+const OPTIONS: EmblaOptionsType = { 
+  loop: false,
+  align: "center",
+  containScroll: "trimSnaps",
+  dragFree: false
+};
 
 export interface ImgType {
   id: UniqueIdentifier;
@@ -43,6 +48,8 @@ type UploadUIProps = {
 export default function UploadUI({ onUploaded }: UploadUIProps) {
   const [imgs, setImgs] = useState<ImgType[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [pendingUploads, setPendingUploads] = useState<Set<UniqueIdentifier>>(new Set());
+  const pendingDeletions = React.useRef<Map<UniqueIdentifier, string | null>>(new Map());
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (uploadedFiles) => {
@@ -51,6 +58,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
         return;
       }
 
+      // Process completed uploads
       setImgs((prevImgs) => {
         let index = 0;
         const updatedImgs = prevImgs.map((img) => {
@@ -58,6 +66,24 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             const uploadedFile = uploadedFiles[index];
             index++;
             if (uploadedFile) {
+              // Skip this image if it has been marked for deletion during upload
+              if (pendingDeletions.current.has(img.id)) {
+                console.log(`Deleting image with id ${img.id} after upload completed`);
+                // Delete the file as it has completed uploading
+                if (uploadedFile.key) {
+                  void deleteUploadedFiles([uploadedFile.key]);
+                }
+                pendingDeletions.current.delete(img.id);
+                return null;
+              }
+              
+              // Remove from pending uploads
+              setPendingUploads(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(img.id);
+                return newSet;
+              });
+              
               return {
                 ...img,
                 uploadedUrl: uploadedFile.url,
@@ -66,7 +92,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             }
           }
           return img;
-        });
+        }).filter((img): img is ImgType => img !== null);
 
         const uploadedUrls = updatedImgs
           .map((img) => img.uploadedUrl)
@@ -81,30 +107,42 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     },
     onUploadError: (error) => {
       console.error("Upload error:", error);
+      // Clear pending uploads on error
+      setPendingUploads(new Set());
     },
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     const newImgs: ImgType[] = [];
+    const newPendingIds: UniqueIdentifier[] = [];
 
     files.forEach((file) => {
       const newUrl = URL.createObjectURL(file);
       const isDuplicate = imgs.some((img) => img.src === newUrl);
 
       if (!isDuplicate) {
+        const id = uuidv4();
         newImgs.push({
-          id: uuidv4(),
+          id,
           src: newUrl,
           file: file,
           uploadedUrl: null,
           uploadedKey: null,
         });
+        newPendingIds.push(id);
       } else {
         URL.revokeObjectURL(newUrl);
       }
     });
 
+    // Add new images to pending uploads tracker
+    setPendingUploads(prev => {
+      const newSet = new Set(prev);
+      newPendingIds.forEach(id => newSet.add(id));
+      return newSet;
+    });
+    
     setImgs((prevImgs) => [...prevImgs, ...newImgs]);
 
     // Start the upload
@@ -133,15 +171,58 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
   const removeCurrentImg = async () => {
     const imgToRemove = imgs[currentIndex];
-    if (imgToRemove) {
-      URL.revokeObjectURL(imgToRemove.src);
-      if (imgToRemove.uploadedKey) {
-        await deleteUploadedFiles([imgToRemove.uploadedKey]);
-      }
-    }
-
-    setImgs((imgs) => imgs.filter((_, index) => index !== currentIndex));
+    if (!imgToRemove) return;
+    
+    // Update UI immediately - remove the image from state first
+    setImgs((currentImgs) => currentImgs.filter((_, index) => index !== currentIndex));
     setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    
+    // Mark this image for deletion regardless of its upload state
+    URL.revokeObjectURL(imgToRemove.src);
+    
+    // If the image is still uploading, mark it for deletion after upload completes
+    if (pendingUploads.has(imgToRemove.id)) {
+      console.log(`Marking image with id ${imgToRemove.id} for deletion after upload`);
+      pendingDeletions.current.set(imgToRemove.id, null);
+    } else if (imgToRemove.uploadedKey) {
+      // If upload is complete, delete it now
+      console.log(`Deleting uploaded image with key ${imgToRemove.uploadedKey}`);
+      await deleteUploadedFiles([imgToRemove.uploadedKey]);
+    }
+  };
+
+  // Function to delete all images
+  const deleteAllImages = async () => {
+    // Store references to files that need cleanup
+    const imagesToCleanup = [...imgs];
+    
+    // Update UI immediately
+    setImgs([]);
+    
+    // Then handle cleanup operations asynchronously
+    imagesToCleanup.forEach((img) => {
+      URL.revokeObjectURL(img.src);
+      
+      // Mark every image for deletion regardless of state
+      if (pendingUploads.has(img.id)) {
+        console.log(`Marking image with id ${img.id} for deletion after upload`);
+        pendingDeletions.current.set(img.id, null);
+      } else if (img.uploadedKey) {
+        console.log(`Queuing deletion for image with key ${img.uploadedKey}`);
+        pendingDeletions.current.set(img.id, img.uploadedKey);
+      }
+    });
+    
+    // Delete any files that are already uploaded
+    const uploadedKeys = imagesToCleanup
+      .filter(img => !pendingUploads.has(img.id) && img.uploadedKey !== null)
+      .map(img => img.uploadedKey)
+      .filter((key): key is string => key !== null);
+    
+    if (uploadedKeys.length > 0) {
+      console.log(`Deleting ${uploadedKeys.length} already uploaded images`);
+      await deleteUploadedFiles(uploadedKeys);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -164,12 +245,12 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
 
   return (
     <div className="Upload-UI">
-      <div className="flex flex-row flex-wrap max-width-[100%] justify-stretch gap-2">
-        <div className="flex flex-col space-y-2">
+      <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col items-center gap-3 w-full">
           <Button
             variant="outline"
-            size="default"
-            className="w-full max-w-xs"
+            size="lg"
+            className="w-full sm:w-auto"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById("file-upload")?.click();
@@ -178,44 +259,39 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
             <Upload className="mr-2 h-4 w-4" />
             Upload Images
           </Button>
-          <input
-            id="file-upload"
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            aria-label="Upload images"
-            onChange={handleFileChange}
-          />
-          <p className="text-sm text-gray-500 text-center">Max 24 images</p>
+          <p className="text-sm text-muted-foreground text-center sm:ml-2">Max 24 images</p>
+          
+          {imgs.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button
+                type="button"
+                onClick={removeCurrentImg}
+                variant="secondary"
+                className="w-full sm:w-auto"
+              >
+                Delete Current Image
+              </Button>
+              <Button
+                type="button"
+                onClick={deleteAllImages}
+                variant="destructive"
+                className="w-full sm:w-auto"
+              >
+                Delete All Images
+              </Button>
+            </div>
+          )}
         </div>
-        {imgs.length > 0 && (
-          <div className="flex gap-2 justify-end">
-            <Button
-              type="button"
-              onClick={removeCurrentImg}
-              variant="secondary"
-            >
-              Delete Current Image
-            </Button>
-            <Button
-              type="button"
-              onClick={async () => {
-                imgs.forEach((img) => URL.revokeObjectURL(img.src));
-                const uploadedKeys = imgs
-                  .map((img) => img.uploadedKey)
-                  .filter((key): key is string => key !== null);
-                if (uploadedKeys.length > 0) {
-                  await deleteUploadedFiles(uploadedKeys);
-                }
-                setImgs([]);
-              }}
-              variant="destructive"
-            >
-              Delete All Images
-            </Button>
-          </div>
-        )}
+
+        <input
+          id="file-upload"
+          type="file"
+          multiple
+          accept="image/*"
+          className="hidden"
+          aria-label="Upload images"
+          onChange={handleFileChange}
+        />
       </div>
 
       <EmblaCarousel

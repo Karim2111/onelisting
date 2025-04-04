@@ -75,7 +75,7 @@ export default function TagsField({
   const isMaxTagsReached = tags.length >= maxTags;
 
   return (
-    <div className="w-full max-w-md mx-auto p-6">
+    <div className="w-full">
       <div className="relative" onBlur={handleBlur}>
         <input
           type="text"
@@ -83,13 +83,13 @@ export default function TagsField({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           onFocus={handleFocus}
-          className={`w-full px-3 pt-6 pb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[var(--foreground)] transition-all duration-300 ease-out ${
-            isMaxTagsReached ? 'bg-gray-100' : ''
+          className={`w-full px-4 pt-6 pb-2 border rounded-md focus:outline-none focus:border-primary focus:border-2 bg-background h-14 transition-all duration-300 ease-out ${
+            isMaxTagsReached ? 'bg-muted text-muted-foreground' : ''
           }`}
           disabled={isMaxTagsReached}
         />
         <span
-          className={`absolute left-3 text-gray-400 pointer-events-none transition-all duration-300 ease-out ${
+          className={`absolute left-4 pointer-events-none transition-all duration-300 ease-out ${
             isFocused || inputValue.trim() !== ''
               ? 'top-2 text-xs opacity-100'
               : 'top-1/2 -translate-y-1/2 text-base opacity-100'
@@ -100,28 +100,26 @@ export default function TagsField({
         <Button
           onClick={addTag}
           disabled={isMaxTagsReached || inputValue.trim() === ''}
-          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
           variant="ghost"
+          type="button"
         >
-          <Plus className="h-4 w-4 hover:bg-white-900" color="gray" />
+          <Plus className="h-4 w-4 text-primary" />
         </Button>
       </div>
-      {error && <p className="text-sm text-red-500 mt-2">{error}</p>} {/* Show error message */}
-      <p className="text-sm text-gray-600 mt-2">
-        Optional. Tags added: {tags.length}
-        {maxTags !== Infinity && ` / ${maxTags}`}
-      </p>
+      {error && <p className="text-sm text-destructive mt-2">{error}</p>}
       <div className="flex flex-wrap gap-2 mt-3">
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center"
+            className="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full flex items-center"
           >
             {tag}
             <button
               onClick={() => removeTag(index)}
-              className="ml-1.5 text-blue-800 hover:text-blue-900 focus:outline-none"
+              className="ml-1.5 text-primary hover:text-primary/80 focus:outline-none"
               aria-label={`Remove ${tag}`}
+              type="button"
             >
               <X size={14} />
             </button>

@@ -24,15 +24,15 @@ const FloatingTextarea = React.forwardRef<HTMLTextAreaElement, FloatingTextareaP
           onBlur={() => setIsFocused(hasValue)}
           ref={ref}
           className={cn(
-            "peer w-full min-h-[80px] resize-y rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500",
+            "peer w-full resize-y rounded-md border px-4 pt-6 pb-2 bg-background transition-all focus:border-primary focus:border-2 outline-none",
             className
           )}
         />
         <span
-          className={`absolute left-4 top-2 pointer-events-none transition-all duration-200 
+          className={`absolute left-4 top-2 pointer-events-none transition-all duration-300 ease-out
             ${isFocused || hasValue
-              ? "text-xs translate-y-[-50%] "
-              : "translate-y-4 text-gray-500"}
+              ? "text-xs translate-y-[-20%] "
+              : "translate-y-2"}
           `}
         >
           {placeholder}
@@ -63,11 +63,11 @@ export function FloatingInput({ className = "", minLength, maxLength, placeholde
         onChange={onChange} // Use form-controlled onChange
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(value ? true : false)}
-        className={`peer w-full rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all 
-          focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${className}`}
+        className={`peer w-full rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all bg-background
+         focus:border-primary focus:border-2 outline-none h-14 ${className}`}
       />
       <span
-        className={`absolute left-4 pointer-events-none transition-all duration-200 
+        className={`absolute left-4 pointer-events-none transition-all duration-300 ease-out
           ${isFocused || value ? 'text-xs translate-y-1 ' : 'translate-y-4 '}`}
       >
         {placeholder}
@@ -77,6 +77,82 @@ export function FloatingInput({ className = "", minLength, maxLength, placeholde
             {!value ? -minLength : value.toString().length < minLength ? -minLength + value.toString().length : maxLength ? `${value.toString().length}/${maxLength}` : 0} Characters
          </div>
         )}
+    </div>
+  );
+}
+
+export type NumberInputProps = Omit<InputProps, 'type'> & {
+  allowDecimals?: boolean;
+  step?: number;
+};
+
+export function FloatingNumberInput({ 
+  className = "", 
+  placeholder, 
+  value, 
+  onChange,
+  allowDecimals = false,
+  step = 1,
+  ...props 
+}: NumberInputProps) {
+  const [isFocused, setIsFocused] = React.useState(false);
+  const [displayValue, setDisplayValue] = React.useState<string>(value?.toString() ?? '');
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    
+    // Only allow numbers and optionally a decimal point
+    const regex = allowDecimals ? /^$|^[0-9]+\.?[0-9]*$/ : /^$|^[0-9]+$/;
+    
+    if (regex.test(input)) {
+      setDisplayValue(input);
+      
+      // Convert to number or empty string
+      if (input === '') {
+        if (onChange) {
+          onChange({ ...e, target: { ...e.target, value: '' } });
+        }
+      } else {
+        const numericValue = allowDecimals ? parseFloat(input) : parseInt(input, 10);
+        if (!isNaN(numericValue)) {
+          if (onChange) {
+            onChange({ ...e, target: { ...e.target, value: numericValue.toString() } });
+          }
+        }
+      }
+    }
+  };
+  
+  // Keep display value in sync with actual value
+  React.useEffect(() => {
+    if (value !== undefined) {
+      setDisplayValue(value.toString());
+    }
+  }, [value]);
+
+  const hasValue = displayValue !== '';
+
+  return (
+    <div className="relative w-full">
+      <input
+        {...props}
+        type="text"
+        inputMode="numeric"
+        value={displayValue}
+        onChange={handleChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(hasValue)}
+        className={cn(
+          "peer w-full rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all bg-background focus:border-primary focus:border-2 outline-none h-14",
+          className
+        )}
+      />
+      <span
+        className={`absolute left-4 pointer-events-none transition-all duration-300 ease-out
+          ${isFocused || hasValue ? 'text-xs translate-y-1 ' : 'translate-y-4 '}`}
+      >
+        {placeholder}
+      </span>
     </div>
   );
 }
