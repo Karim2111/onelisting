@@ -12,13 +12,16 @@ export type FloatingTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaEle
 const FloatingTextarea = React.forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
   ({ className = "", minLength, maxLength, placeholder, value, onChange, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
-    const hasValue = Boolean(value && value.toString().length > 0);
+    
+    // Ensure value is always a string, even if undefined or null
+    const textareaValue = value ?? '';
+    const hasValue = Boolean(textareaValue && textareaValue.toString().length > 0);
 
     return (
       <div className="relative w-full">
         <textarea
           {...props}
-          value={value}
+          value={textareaValue}
           onChange={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(hasValue)}
@@ -39,7 +42,7 @@ const FloatingTextarea = React.forwardRef<HTMLTextAreaElement, FloatingTextareaP
         </span>
         {minLength && (
         <div className="mt-1 text-xs ">
-            {!value ? -minLength : value.toString().length < minLength ? -minLength + value.toString().length : maxLength ? `${value.toString().length}/${maxLength}` : 0} Characters
+            {!textareaValue ? -minLength : textareaValue.toString().length < minLength ? -minLength + textareaValue.toString().length : maxLength ? `${textareaValue.toString().length}/${maxLength}` : 0} Characters
          </div>
         )}
       </div>
@@ -54,27 +57,30 @@ export { FloatingTextarea };
 
 export function FloatingInput({ className = "", minLength, maxLength, placeholder, value, onChange, ...props }: InputProps) {
   const [isFocused, setIsFocused] = React.useState(false);
+  
+  // Ensure value is always a string, even if it's undefined or null
+  const inputValue = value ?? '';
 
   return (
     <div className="relative w-full">
       <input
         {...props}
-        value={value} // Use form-controlled value
+        value={inputValue} // Use safe value
         onChange={onChange} // Use form-controlled onChange
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(value ? true : false)}
+        onBlur={() => setIsFocused(inputValue ? true : false)}
         className={`peer w-full rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all bg-background
-         focus:border-primary focus:border-2 outline-none h-14 ${className}`}
+         focus:border-primary focus:border-2 h-14 ${className}`}
       />
       <span
         className={`absolute left-4 pointer-events-none transition-all duration-300 ease-out
-          ${isFocused || value ? 'text-xs translate-y-1 ' : 'translate-y-4 '}`}
+          ${isFocused || inputValue ? 'text-xs translate-y-1 ' : 'translate-y-4 '}`}
       >
         {placeholder}
       </span>
       {minLength && (
         <div className="mt-1 text-xs ">
-            {!value ? -minLength : value.toString().length < minLength ? -minLength + value.toString().length : maxLength ? `${value.toString().length}/${maxLength}` : 0} Characters
+            {!inputValue ? -minLength : inputValue.toString().length < minLength ? -minLength + inputValue.toString().length : maxLength ? `${inputValue.toString().length}/${maxLength}` : 0} Characters
          </div>
         )}
     </div>
@@ -96,7 +102,13 @@ export function FloatingNumberInput({
   ...props 
 }: NumberInputProps) {
   const [isFocused, setIsFocused] = React.useState(false);
-  const [displayValue, setDisplayValue] = React.useState<string>(value?.toString() ?? '');
+  
+  // Convert value to string, handling undefined, null, and NaN
+  const safeValue = (value !== undefined && value !== null && !isNaN(Number(value))) 
+    ? String(value)
+    : '';
+    
+  const [displayValue, setDisplayValue] = React.useState<string>(safeValue);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -125,10 +137,14 @@ export function FloatingNumberInput({
   
   // Keep display value in sync with actual value
   React.useEffect(() => {
-    if (value !== undefined) {
-      setDisplayValue(value.toString());
+    const newValue = (value !== undefined && value !== null && !isNaN(Number(value))) 
+      ? String(value)
+      : '';
+      
+    if (displayValue !== newValue) {
+      setDisplayValue(newValue);
     }
-  }, [value]);
+  }, [value, displayValue]);
 
   const hasValue = displayValue !== '';
 
@@ -143,7 +159,7 @@ export function FloatingNumberInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(hasValue)}
         className={cn(
-          "peer w-full rounded-md border px-4 pt-6 pb-2 text-base outline-none transition-all bg-background focus:border-primary focus:border-2 outline-none h-14",
+          "peer w-full rounded-md border px-4 pt-6 pb-2 text-base transition-all bg-background focus:border-primary focus:border-2 outline-none h-14",
           className
         )}
       />

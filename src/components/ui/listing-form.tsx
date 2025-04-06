@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import React from "react"
+import React, { useState, useRef, useCallback, useEffect } from "react"
 
 
 // UI 
@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import UploadUI from "~/components/UploadUI/UploadUI";
 import TagsField from "~/components/ui/tags-component";
 import { FloatingInput, FloatingTextarea, FloatingNumberInput } from "./inputsLight"
-
+import { generateFields } from "~/server/db/listings/actions";
 const descriptionMinLength = 8;
 const descriptionMaxLength = 61000;
 const titleMinLength = 8;
@@ -25,12 +25,15 @@ const skuMinLength = 1;
 const priceMinValue = 0;
 const priceMaxValue = 999999999;
 
+const CONDITIONS = ["brand-new", "like-new", "good", "fair"] as const;
+type Condition = typeof CONDITIONS[number];
+
 export const formSchema = z.object({
   photos: z.array(z.string().url()),
   title: z.string().min(titleMinLength).max(titleMaxLength),
   price: z.number().int().nonnegative().gte(priceMinValue).lte(priceMaxValue),
-  sku: z.string().min(skuMinLength).max(skuMaxLength).optional(),
-  condition: z.string(),
+  sku: z.string().max(skuMaxLength).optional(),
+  condition: z.enum(CONDITIONS),
   category: z.string(),
   description: z
     .string()
@@ -43,11 +46,35 @@ export const formSchema = z.object({
   tags: z.array(z.string())
 });
 
+export type FormValues = z.infer<typeof formSchema>;
+
+// Add this interface for the AI response
+interface AIResponse {
+  title?: string;
+  description?: string;
+  price?: number;
+  sku?: string;
+  condition?: string;
+  tags?: string[];
+  category?: {
+    id: number;
+    name: string;
+  };
+}
 
 export default function MyForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { tags: [], price: 0 },
+    defaultValues: { 
+      tags: [], 
+      price: 0,
+      title: '',
+      description: '',
+      sku: '',
+      photos: [],
+      category: '',
+      condition: "brand-new",
+    },
     mode: "onSubmit",
     reValidateMode: "onSubmit"
   });
@@ -55,18 +82,60 @@ export default function MyForm() {
   const { toast } = useToast();
   const router = useRouter();
   const uploadedUrlsRef = React.useRef<string[]>([]);
+  const [lastUploadUpdate, setLastUploadUpdate] = React.useState<number>(0);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationTime, setGenerationTime] = useState(0);
+  const generationTimer = useRef<NodeJS.Timeout>();
+  const startTime = useRef<number>(0);
 
   const handleUploaded = React.useCallback((urls: string[]) => {
+    console.log("Image URLs updated:", urls);
     uploadedUrlsRef.current = urls;
+    setLastUploadUpdate(Date.now()); // Trigger the effect
   }, []);
 
+  // Use an effect to update the form state when uploadedUrlsRef changes
   React.useEffect(() => {
-    if (uploadedUrlsRef.current.length > 0) {
-      form.setValue('photos', uploadedUrlsRef.current);
+    if (lastUploadUpdate === 0) return; // Skip initial render
+    
+    const urls = uploadedUrlsRef.current;
+    if (urls && urls.length >= 0) { // Include empty arrays to clear validation
+      form.setValue('photos', urls, { shouldValidate: true });
     }
-  }, [form]);
+  }, [form, lastUploadUpdate]);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // Watch for photos field changes to monitor validation
+  const photos = form.watch('photos');
+  const hasPhotos = photos && photos.length > 0;
+
+  const updateGenerationTime = useCallback(() => {
+    if (startTime.current) {
+      const elapsed = (Date.now() - startTime.current) / 1000;
+      setGenerationTime(elapsed);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isGenerating) {
+      startTime.current = Date.now();
+      generationTimer.current = setInterval(() => {
+        updateGenerationTime();
+      }, 10); // Update every 10ms for smooth counter
+    } else {
+      if (generationTimer.current) {
+        clearInterval(generationTimer.current);
+      }
+      startTime.current = 0;
+      setGenerationTime(0);
+    }
+    return () => {
+      if (generationTimer.current) {
+        clearInterval(generationTimer.current);
+      }
+    };
+  }, [isGenerating, updateGenerationTime]);
+
+  const onSubmit = async (values: FormValues) => {
     try {
       console.log(values);
       await insertListingToDb(values); // Get the new listing from the database
@@ -89,6 +158,86 @@ export default function MyForm() {
     }
   };
   
+  const handleGenerateFields = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Prevent form submission
+    if (photos && photos.length > 0) {
+      try {
+        setIsGenerating(true);
+        const response = await generateFields(photos);
+        console.log('AI Response:', response); // Debug log
+
+        if (!response) {
+          console.error('No response from AI');
+          return;
+        }
+
+        let data: AIResponse;
+        try {
+          data = JSON.parse(response) as AIResponse;
+        } catch (parseError) {
+          console.error('Error parsing AI response:', parseError);
+          return;
+        }
+        
+        console.log('Parsed data:', data); // Debug log
+
+        // Update form fields with the generated data
+        if (data.title) {
+          form.setValue('title', data.title, { shouldValidate: true });
+          console.log('Set title to:', data.title);
+        }
+        
+        if (data.description) {
+          form.setValue('description', data.description, { shouldValidate: true });
+          console.log('Set description to:', data.description);
+        }
+        
+        if (typeof data.price === 'number') {
+          form.setValue('price', data.price, { shouldValidate: true });
+          console.log('Set price to:', data.price);
+        }
+        
+        if (data.sku) {
+          form.setValue('sku', data.sku, { shouldValidate: true });
+          console.log('Set sku to:', data.sku);
+        }
+        
+        if (data.condition) {
+          // Ensure the condition is one of the valid enum values
+          const condition = data.condition as Condition;
+          if (CONDITIONS.includes(condition)) {
+            form.setValue('condition', condition, { shouldValidate: true });
+            console.log('Set condition to:', condition);
+          } else {
+            console.error('Invalid condition value:', data.condition);
+          }
+        }
+        
+        // Handle tags
+        if (data.tags && Array.isArray(data.tags)) {
+          form.setValue('tags', data.tags, { shouldValidate: true });
+          console.log('Set tags to:', data.tags);
+        }
+        
+        // Handle category with ID-name format
+        if (data.category?.id && data.category?.name) {
+          const categoryValue = `${data.category.id} - ${data.category.name}`;
+          form.setValue('category', categoryValue, { shouldValidate: true });
+          console.log('Set category to:', categoryValue);
+        }
+
+        // Log all form values after setting them
+        console.log('Form values after update:', form.getValues());
+
+      } catch (error) {
+        console.error('Error handling AI response:', error);
+      } finally {
+        setIsGenerating(false);
+      }
+    } else {
+      console.log('No photos available'); // Debug log
+    }
+  };
 
   return (
     <div className="w-full max-w-3xl overflow-auto max-h-[100%] mx-auto p-4">
@@ -97,12 +246,31 @@ export default function MyForm() {
       </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="bg-card/30 rounded-lg p-6 shadow-sm border border-border/40">
-            <h3 className="text-lg font-medium mb-4">Product Images</h3>
+          <div className={`bg-card/30 rounded-lg p-6 shadow-sm border ${hasPhotos ? 'border-border/40' : 'border-destructive/40'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">Product Images</h3>
+              <div className="text-sm text-muted-foreground">
+                {hasPhotos ? (
+                  <span className="text-green-600 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {photos.length} image(s)
+                  </span>
+                ) : (
+                  <span className="text-destructive flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Required
+                  </span>
+                )}
+              </div>
+            </div>
             <FormField
               control={form.control}
               name="photos"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormControl>
                     <UploadUI onUploaded={handleUploaded} />
@@ -115,6 +283,28 @@ export default function MyForm() {
           
           <div className="bg-card/30 rounded-lg p-6 shadow-sm space-y-6 border border-border/40">
             <h3 className="text-lg font-medium mb-4">Product Details</h3>
+            {photos && photos.length > 0 && (
+              <Button 
+                type="button" 
+                onClick={handleGenerateFields}
+                className="mb-4 relative"
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Generating ({generationTime.toFixed(2)}s)
+                    </span>
+                  </>
+                ) : (
+                  'Generate Fields'
+                )}
+              </Button>
+            )}
             <FormField
               control={form.control}
               name="title"
@@ -140,20 +330,14 @@ export default function MyForm() {
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="h-14 pt-4 pb-1 bg-background/60 relative focus:border-primary border-outline focus:border-2 focus:outline-none focus:ring-0">
-                        <span className="absolute left-3 top-2 text-xs pointer-events-none">Category</span>
-                        <SelectValue className="text-left pt-2" placeholder=" " />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="like-new">Used (like-new)</SelectItem>
-                      <SelectItem value="good">Used (good)</SelectItem>
-                      <SelectItem value="fair">Used (fair)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <FloatingInput 
+                      placeholder="Category"
+                      type="text"
+                      {...field}
+                      className="bg-background/60"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -211,15 +395,15 @@ export default function MyForm() {
                   name="condition"
                   render={({ field }) => (
                     <FormItem>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="h-14 pt-4 pb-1 bg-background/60 relative focus:border-primary focus:border-2 border-outline focus:ring-0">
                             <span className="absolute left-3 top-2 text-xs pointer-events-none">Condition</span>
-                            <SelectValue className="text-left pt-2" placeholder=" " />
+                            <SelectValue className="text-left pt-2" placeholder="Select condition" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="new">Brand new</SelectItem>
+                          <SelectItem value="brand-new">Brand new</SelectItem>
                           <SelectItem value="like-new">Used (like-new)</SelectItem>
                           <SelectItem value="good">Used (good)</SelectItem>
                           <SelectItem value="fair">Used (fair)</SelectItem>

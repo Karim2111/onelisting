@@ -27,6 +27,9 @@ export const env = createEnv({
     UPLOADTHING_SECRET: z.string().startsWith('sk_'),
     UPLOADTHING_TOKEN: z.string(),
 
+    // Google API
+    GEMINI_API_KEY: z.string(),
+
     // Node
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
@@ -73,6 +76,9 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+
+    // Google API
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 
     // Node
     NODE_ENV: process.env.NODE_ENV,

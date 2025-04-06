@@ -50,7 +50,6 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [pendingUploads, setPendingUploads] = useState<Set<UniqueIdentifier>>(new Set());
   const pendingDeletions = React.useRef<Map<UniqueIdentifier, string | null>>(new Map());
-
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (uploadedFiles) => {
       if (!uploadedFiles) {
@@ -98,8 +97,11 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
           .map((img) => img.uploadedUrl)
           .filter((url): url is string => url !== null);
 
-        if (onUploaded) {
-          onUploaded(uploadedUrls);
+        // Use setTimeout to defer the callback until after render
+        if (onUploaded && uploadedUrls.length >= 0) {
+          setTimeout(() => {
+            onUploaded(uploadedUrls);
+          }, 0);
         }
 
         return updatedImgs;
@@ -169,35 +171,19 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     }
   };
 
-  const removeCurrentImg = async () => {
-    const imgToRemove = imgs[currentIndex];
-    if (!imgToRemove) return;
-    
-    // Update UI immediately - remove the image from state first
-    setImgs((currentImgs) => currentImgs.filter((_, index) => index !== currentIndex));
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-    
-    // Mark this image for deletion regardless of its upload state
-    URL.revokeObjectURL(imgToRemove.src);
-    
-    // If the image is still uploading, mark it for deletion after upload completes
-    if (pendingUploads.has(imgToRemove.id)) {
-      console.log(`Marking image with id ${imgToRemove.id} for deletion after upload`);
-      pendingDeletions.current.set(imgToRemove.id, null);
-    } else if (imgToRemove.uploadedKey) {
-      // If upload is complete, delete it now
-      console.log(`Deleting uploaded image with key ${imgToRemove.uploadedKey}`);
-      await deleteUploadedFiles([imgToRemove.uploadedKey]);
-    }
-  };
-
-  // Function to delete all images
   const deleteAllImages = async () => {
     // Store references to files that need cleanup
     const imagesToCleanup = [...imgs];
     
     // Update UI immediately
     setImgs([]);
+    
+    // Update the form state with empty array immediately - use setTimeout
+    if (onUploaded) {
+      setTimeout(() => {
+        onUploaded([]);
+      }, 0);
+    }
     
     // Then handle cleanup operations asynchronously
     imagesToCleanup.forEach((img) => {
@@ -222,6 +208,44 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     if (uploadedKeys.length > 0) {
       console.log(`Deleting ${uploadedKeys.length} already uploaded images`);
       await deleteUploadedFiles(uploadedKeys);
+    }
+  };
+
+  const removeCurrentImg = async () => {
+    const imgToRemove = imgs[currentIndex];
+    if (!imgToRemove) return;
+    
+    // Update UI immediately - remove the image from state first
+    setImgs((currentImgs) => {
+      const newImgs = currentImgs.filter((_, index) => index !== currentIndex);
+      
+      // Update the form state with the remaining uploaded URLs - use setTimeout
+      const remainingUrls = newImgs
+        .map((img) => img.uploadedUrl)
+        .filter((url): url is string => url !== null);
+      
+      if (onUploaded) {
+        setTimeout(() => {
+          onUploaded(remainingUrls);
+        }, 0);
+      }
+      
+      return newImgs;
+    });
+    
+    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+    
+    // Mark this image for deletion regardless of its upload state
+    URL.revokeObjectURL(imgToRemove.src);
+    
+    // If the image is still uploading, mark it for deletion after upload completes
+    if (pendingUploads.has(imgToRemove.id)) {
+      console.log(`Marking image with id ${imgToRemove.id} for deletion after upload`);
+      pendingDeletions.current.set(imgToRemove.id, null);
+    } else if (imgToRemove.uploadedKey) {
+      // If upload is complete, delete it now
+      console.log(`Deleting uploaded image with key ${imgToRemove.uploadedKey}`);
+      await deleteUploadedFiles([imgToRemove.uploadedKey]);
     }
   };
 
@@ -255,11 +279,25 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
               e.preventDefault();
               document.getElementById("file-upload")?.click();
             }}
+            disabled={isUploading}
           >
-            <Upload className="mr-2 h-4 w-4" />
-            Upload Images
+            {isUploading ? (
+              <>
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Images
+              </>
+            )}
           </Button>
-          <p className="text-sm text-muted-foreground text-center sm:ml-2">Max 24 images</p>
+          <p className="text-sm text-muted-foreground text-center">
+            {isUploading 
+              ? "Please wait while your images upload..." 
+              : `${imgs.length}/24 images added`}
+          </p>
           
           {imgs.length > 0 && (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">

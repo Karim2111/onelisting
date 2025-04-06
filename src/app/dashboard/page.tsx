@@ -16,13 +16,13 @@ export default async function TaskPage() {
         <h1 className="text-2xl sm:text-4xl xl:text-5xl font-bold text-foreground">Dashboard</h1>
         <div className="flex gap-2 flex-row mt-4 sm:mt-0 ">
           <Button asChild variant="default">
-            <Link href="/create-listing">
+            <Link href="/create-listing" prefetch={true}>
               <Plus className="h-4 w-4 mr-2" />
               Create Listing
             </Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/connections">
+            <Link href="/connections" prefetch={true}>
               <LinkIcon className="h-4 w-4 mr-2" />
               Connections
             </Link>

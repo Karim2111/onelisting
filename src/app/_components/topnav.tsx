@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/navigation-menu";
 
 const LogoLink = ({ href }: { href: string }) => (
-  <Link href={href} passHref>
+  <Link href={href} passHref prefetch={true}>
     <Image
       src="/icon0.svg"
       alt="OneListing Logo"
