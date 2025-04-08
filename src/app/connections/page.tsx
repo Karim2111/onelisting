@@ -160,7 +160,7 @@ export default function ConnectionsPage() {
                 Connect your marketplace accounts to crosslist your products automatically.
               </p>
             </div>
-            <Button asChild variant={"default"}><Link href="/dashboard">
+            <Button asChild variant={"default"}><Link href="/dashboard" prefetch={true}>
               <ArrowLeftToLine className="h-4 w-6 mr-2" /> Dashboard
             </Link></Button>
           </div>

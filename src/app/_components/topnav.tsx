@@ -28,7 +28,7 @@ const BrandLink = ({ href, label }: { href: string; label: string }) => (
   <NavigationMenu>
     <NavigationMenuList>
       <NavigationMenuItem>
-          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} font-bold tracking-tight text-2xl hover:text-primary`} href={href}>
+          <NavigationMenuLink className={`${navigationMenuTriggerStyle()} font-bold tracking-tight text-2xl hover:text-accent-foreground`} href={href}>
             {label}
           </NavigationMenuLink>
       </NavigationMenuItem>

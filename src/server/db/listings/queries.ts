@@ -56,7 +56,7 @@ export async function getListing(id: number) {
   return listing;
 }
 
-export async function deleteListing(id: number): Promise<void> {
+export async function deleteListing(id: number): Promise<{ success: boolean }> {
     const user = await auth();
     if (!user.userId) throw new Error("Unauthorized");
   
@@ -64,5 +64,5 @@ export async function deleteListing(id: number): Promise<void> {
       .delete(listings)
       .where(and(eq(listings.id, id), eq(listings.userId, user.userId)));
   
-    redirect("/dashboard");
-  }
+    return { success: true };
+}

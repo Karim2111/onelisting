@@ -78,7 +78,7 @@ const listingSchema = {
       items: { type: Type.STRING },
     },
   },
-  required: ["description", "category", "title", "condition", "image-urls", "tags"],
+  required: ["description", "category", "title", "condition", "tags"],
 };
 
 export async function updateListing(formValues: z.infer<typeof editSchema>) {
@@ -126,55 +126,63 @@ interface AIResponse {
   };
 }
 
-export async function generateFields(urls: string[]) {
-  console.log("Generating fields...")
+export async function generateFields(urls: string[], note?: string) {
+  console.log("Generating fields...");
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    const images = []
-    for (const url of urls) {
-        const image = await imageFromUrlToBase64(url);
-        images.push(image)
+  const images = [];
+  
+  for (const url of urls) {
+    const image = await imageFromUrlToBase64(url);
+    images.push(image);
+  }
+
+  // Create the prompt with the optional note
+  const prompt = note 
+    ? `You must create a Kijiji marketplace listing for the item shown in the images. Additional context from user: "${note}". Please fill out the fields accordingly. Below are all of the category ID's you must choose from. ${MyCategories}`
+    : `You must create a Kijiji marketplace listing for the item shown in the images. Please fill out the fields accordingly. Below are all of the category ID's you must choose from. ${MyCategories}`;
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: [
+      prompt,
+      ...images,
+    ],
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: listingSchema
     }
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: [
-              "You must create a Kijiji marketplace listing for the item. The item may be shown by the user in an image or with a description. Please fill out the fields accordingly. Below are all of the category ID's you must choose from. " + MyCategories, 
-                ...images,
-            ],
-        config: {
-            responseMimeType: 'application/json',
-            responseSchema: listingSchema
-        }
-    })
-    if (response?.text) {
-      console.log('Raw response:', response.text);
+  });
+
+  if (response?.text) {
+    console.log('Raw response:', response.text);
+    
+    // Try to parse the response to ensure it's valid JSON
+    try {
+      const parsedResponse = JSON.parse(response.text) as AIResponse;
+      console.log('Parsed response:', parsedResponse);
       
-      // Try to parse the response to ensure it's valid JSON
-      try {
-        const parsedResponse = JSON.parse(response.text) as AIResponse;
-        console.log('Parsed response:', parsedResponse);
-        
-        // Return a properly formatted JSON string
-        return JSON.stringify(parsedResponse);
-      } catch (error) {
-        console.error('Error parsing AI response:', error);
-        return JSON.stringify({
-          title: "Error parsing AI response",
-          description: "There was an error processing the AI response. Please try again.",
-          price: 0,
-          condition: "good",
-          tags: ["error", "retry"],
-          category: { id: 26, name: "Other" }
-        });
-      }
-    } else {
-      console.error('No response from AI');
+      // Return a properly formatted JSON string
+      return JSON.stringify(parsedResponse);
+    } catch (error) {
+      console.error('Error parsing AI response:', error);
       return JSON.stringify({
-        title: "No response from AI",
-        description: "The AI service did not respond. Please try again.",
+        title: "Error parsing AI response",
+        description: "There was an error processing the AI response. Please try again.",
         price: 0,
         condition: "good",
         tags: ["error", "retry"],
         category: { id: 26, name: "Other" }
       });
     }
+  } else {
+    console.error('No response from AI');
+    return JSON.stringify({
+      title: "No response from AI",
+      description: "The AI service did not respond. Please try again.",
+      price: 0,
+      condition: "good",
+      tags: ["error", "retry"],
+      category: { id: 26, name: "Other" }
+    });
+  }
 }   

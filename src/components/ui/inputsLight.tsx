@@ -12,10 +12,21 @@ export type FloatingTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaEle
 const FloatingTextarea = React.forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
   ({ className = "", minLength, maxLength, placeholder, value, onChange, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
+    const [isScrolled, setIsScrolled] = React.useState(false);
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    
+    // Combine refs
+    React.useImperativeHandle(ref, () => textareaRef.current!);
     
     // Ensure value is always a string, even if undefined or null
     const textareaValue = value ?? '';
     const hasValue = Boolean(textareaValue && textareaValue.toString().length > 0);
+
+    // Handle scroll events
+    const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+      const textarea = e.currentTarget;
+      setIsScrolled(textarea.scrollTop > 0);
+    };
 
     return (
       <div className="relative w-full">
@@ -25,23 +36,34 @@ const FloatingTextarea = React.forwardRef<HTMLTextAreaElement, FloatingTextareaP
           onChange={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(hasValue)}
-          ref={ref}
+          onScroll={handleScroll}
+          ref={textareaRef}
           className={cn(
-            "peer w-full resize-y rounded-md border px-4 pt-6 pb-2 bg-background transition-all focus:border-primary focus:border-2 outline-none",
+            "peer w-full rounded-md border px-4 pt-6 pb-2 bg-background",
+            "focus:border-primary focus:border-2 outline-none",
+            "resize-y min-h-[120px] max-h-[400px]",
+            "transition-[border,box-shadow]",
             className
           )}
+          style={{
+            resize: 'vertical',
+            willChange: 'height',
+          }}
         />
         <span
-          className={`absolute left-4 top-2 pointer-events-none transition-all duration-300 ease-out
-            ${isFocused || hasValue
-              ? "text-xs translate-y-[-20%] "
-              : "translate-y-2"}
-          `}
+          className={cn(
+            "absolute left-4 top-2 pointer-events-none",
+            "transition-[opacity,transform] duration-200",
+            isScrolled ? "opacity-0" : "opacity-100",
+            isFocused || hasValue
+              ? "text-xs translate-y-[-20%]"
+              : "translate-y-2"
+          )}
         >
           {placeholder}
         </span>
         {minLength && (
-        <div className="mt-1 text-xs ">
+        <div className="mt-1 text-xs">
             {!textareaValue ? -minLength : textareaValue.toString().length < minLength ? -minLength + textareaValue.toString().length : maxLength ? `${textareaValue.toString().length}/${maxLength}` : 0} Characters
          </div>
         )}

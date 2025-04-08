@@ -9,13 +9,15 @@ interface TagsFieldProps {
   value: string[];
   onChange: (tags: string[]) => void;
   placeholder?: string;
-}
+  className?: string;
+  }
 
 export default function TagsField({
   maxTags = Infinity,
   value,
   onChange,
   placeholder = "Add Tags",
+  className = "",
 }: TagsFieldProps) {
   const [tags, setTags] = useState<string[]>(value || []);
   const [inputValue, setInputValue] = useState('');
@@ -83,9 +85,9 @@ export default function TagsField({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           onFocus={handleFocus}
-          className={`w-full px-4 pt-6 pb-2 border rounded-md focus:outline-none focus:border-primary focus:border-2 bg-background h-14 transition-all duration-300 ease-out ${
+          className={`w-full px-4 pt-6 pb-2 pr-10 border rounded-md focus:outline-none focus:border-primary focus:border-2 bg-background h-14 transition-all duration-300 ease-out ${
             isMaxTagsReached ? 'bg-muted text-muted-foreground' : ''
-          }`}
+          } ${className}`}
           disabled={isMaxTagsReached}
         />
         <span

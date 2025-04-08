@@ -21,6 +21,7 @@ import { Button } from "~/components/ui/button";
 import { Upload } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { generateReactHelpers } from "@uploadthing/react";
+import imageCompression from 'browser-image-compression';
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
@@ -119,24 +120,54 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     const newImgs: ImgType[] = [];
     const newPendingIds: UniqueIdentifier[] = [];
 
-    files.forEach((file) => {
-      const newUrl = URL.createObjectURL(file);
-      const isDuplicate = imgs.some((img) => img.src === newUrl);
+    const compressionOptions = {
+      maxSizeMB: 0.7,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+      fileType: 'image/webp'  // Force output format to WebP
+    };
 
-      if (!isDuplicate) {
-        const id = uuidv4();
-        newImgs.push({
-          id,
-          src: newUrl,
-          file: file,
-          uploadedUrl: null,
-          uploadedKey: null,
-        });
-        newPendingIds.push(id);
-      } else {
-        URL.revokeObjectURL(newUrl);
+    // Process each file with compression
+    for (const file of files) {
+      try {
+        const compressedFile = await imageCompression(file, compressionOptions);
+        const newUrl = URL.createObjectURL(compressedFile);
+        const isDuplicate = imgs.some((img) => img.src === newUrl);
+
+        if (!isDuplicate) {
+          const id = uuidv4();
+          newImgs.push({
+            id,
+            src: newUrl,
+            file: compressedFile, // Use the compressed file instead of original
+            uploadedUrl: null,
+            uploadedKey: null,
+          });
+          newPendingIds.push(id);
+        } else {
+          URL.revokeObjectURL(newUrl);
+        }
+      } catch (error) {
+        console.error('Compression error:', error);
+        // Optionally fall back to original file if compression fails
+        const newUrl = URL.createObjectURL(file);
+        const isDuplicate = imgs.some((img) => img.src === newUrl);
+
+        if (!isDuplicate) {
+          const id = uuidv4();
+          newImgs.push({
+            id,
+            src: newUrl,
+            file: file,
+            uploadedUrl: null,
+            uploadedKey: null,
+          });
+          newPendingIds.push(id);
+        } else {
+          URL.revokeObjectURL(newUrl);
+        }
       }
-    });
+    }
 
     // Add new images to pending uploads tracker
     setPendingUploads(prev => {
@@ -147,7 +178,7 @@ export default function UploadUI({ onUploaded }: UploadUIProps) {
     
     setImgs((prevImgs) => [...prevImgs, ...newImgs]);
 
-    // Start the upload
+    // Start the upload with compressed files
     await startUpload(newImgs.map((img) => img.file));
 
     e.target.value = "";

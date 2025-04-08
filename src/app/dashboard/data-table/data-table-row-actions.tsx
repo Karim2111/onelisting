@@ -38,6 +38,10 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
     setIsDialogOpen(true);
   };
 
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DropdownMenu>
@@ -62,7 +66,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
+            onSelect={handleDeleteClick}
             className='text-red-600'
           >
             <Trash2 className='mr-2 h-4 w-4' />

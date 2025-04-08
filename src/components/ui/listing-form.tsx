@@ -17,11 +17,10 @@ import TagsField from "~/components/ui/tags-component";
 import { FloatingInput, FloatingTextarea, FloatingNumberInput } from "./inputsLight"
 import { generateFields } from "~/server/db/listings/actions";
 const descriptionMinLength = 8;
-const descriptionMaxLength = 61000;
+const descriptionMaxLength = 2500;
 const titleMinLength = 8;
 const titleMaxLength = 64;
 const skuMaxLength = 64;
-const skuMinLength = 1;
 const priceMinValue = 0;
 const priceMaxValue = 999999999;
 
@@ -29,7 +28,7 @@ const CONDITIONS = ["brand-new", "like-new", "good", "fair"] as const;
 type Condition = typeof CONDITIONS[number];
 
 export const formSchema = z.object({
-  photos: z.array(z.string().url()),
+  photos: z.array(z.string().url()).min(1),
   title: z.string().min(titleMinLength).max(titleMaxLength),
   price: z.number().int().nonnegative().gte(priceMinValue).lte(priceMaxValue),
   sku: z.string().max(skuMaxLength).optional(),
@@ -67,7 +66,7 @@ export default function MyForm() {
     resolver: zodResolver(formSchema),
     defaultValues: { 
       tags: [], 
-      price: 0,
+      price: undefined,
       title: '',
       description: '',
       sku: '',
@@ -87,6 +86,9 @@ export default function MyForm() {
   const [generationTime, setGenerationTime] = useState(0);
   const generationTimer = useRef<NodeJS.Timeout>();
   const startTime = useRef<number>(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiNote, setAiNote] = useState<string>("");
+  const [isAiNoteOpen, setIsAiNoteOpen] = useState(false);
 
   const handleUploaded = React.useCallback((urls: string[]) => {
     console.log("Image URLs updated:", urls);
@@ -136,17 +138,21 @@ export default function MyForm() {
   }, [isGenerating, updateGenerationTime]);
 
   const onSubmit = async (values: FormValues) => {
+    if (isSubmitting) return; // Prevent double submission
+    
+    setIsSubmitting(true);
     try {
-      console.log(values);
-      await insertListingToDb(values); // Get the new listing from the database
-
-      toast({
-        title: "Success!",
-        description: "Listing created successfully.",
-        duration: 3000
-      });
-
+      await insertListingToDb(values);
       router.push("/dashboard");
+      setTimeout(() => {
+        toast({
+          title: "Success!",
+          description: "Listing created successfully.",
+          duration: 3000
+        });
+      }, 500);
+
+      
     } catch (error) {
       console.error("Form submission error", error);
       toast({
@@ -155,15 +161,17 @@ export default function MyForm() {
         duration: 3000,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
   const handleGenerateFields = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
     if (photos && photos.length > 0) {
       try {
         setIsGenerating(true);
-        const response = await generateFields(photos);
+        const response = await generateFields(photos, aiNote);
         console.log('AI Response:', response); // Debug log
 
         if (!response) {
@@ -235,7 +243,7 @@ export default function MyForm() {
         setIsGenerating(false);
       }
     } else {
-      console.log('No photos available'); // Debug log
+      console.log('No photos available');
     }
   };
 
@@ -284,26 +292,71 @@ export default function MyForm() {
           <div className="bg-card/30 rounded-lg p-6 shadow-sm space-y-6 border border-border/40">
             <h3 className="text-lg font-medium mb-4">Product Details</h3>
             {photos && photos.length > 0 && (
-              <Button 
-                type="button" 
-                onClick={handleGenerateFields}
-                className="mb-4 relative"
-                disabled={isGenerating}
-              >
-                {isGenerating ? (
-                  <>
-                    <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <div className="flex flex-col gap-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Important info missing from photos?{' '}
+                    <button
+                      type="button"
+                      onClick={() => setIsAiNoteOpen(!isAiNoteOpen)}
+                      className="text-primary hover:underline font-medium inline-flex items-center"
+                    >
+                      Add a note for AI
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        className={`ml-1 transition-transform duration-200 ${isAiNoteOpen ? 'rotate-180' : ''}`}
+                      >
+                        <path d="m6 9 6 6 6-6"/>
                       </svg>
-                      Generating ({generationTime.toFixed(2)}s)
-                    </span>
-                  </>
-                ) : (
-                  'Generate Fields'
-                )}
-              </Button>
+                    </button>
+                  </p>
+                  <Button 
+                    type="button" 
+                    onClick={handleGenerateFields}
+                    className="relative whitespace-nowrap"
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? (
+                      <>
+                        <span className="flex items-center">
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Generating ({generationTime.toFixed(2)}s)
+                        </span>
+                      </>
+                    ) : (
+                      'Generate Fields'
+                    )}
+                  </Button>
+                </div>
+
+                {/* Collapsible note textarea */}
+                <div
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isAiNoteOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <FloatingTextarea
+                    placeholder="Add a note for AI (optional)"
+                    value={aiNote}
+                    onChange={(e) => setAiNote(e.target.value)}
+                    className="h-20 bg-background/60"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Add any specific details or requirements you want the AI to consider
+                  </p>
+                </div>
+              </div>
             )}
             <FormField
               control={form.control}
@@ -315,8 +368,8 @@ export default function MyForm() {
                       placeholder="Title"
                       type="text"
                       {...field}
-                      minLength={8}
-                      maxLength={64}
+                      minLength={titleMinLength}
+                      maxLength={titleMaxLength}
                       className="bg-background/60"
                     />
                   </FormControl>
@@ -357,6 +410,7 @@ export default function MyForm() {
                           step={0.01}
                           {...field}
                           className="bg-background/60"
+                          value={field.value === 0 ? '' : field.value}
                           onChange={(e) => {
                             const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
                             field.onChange(value);
@@ -425,8 +479,8 @@ export default function MyForm() {
                     <FloatingTextarea
                       placeholder="Description"
                       className="h-32 bg-background/60"
-                      minLength={8}
-                      maxLength={64}
+                      minLength={descriptionMinLength}
+                      maxLength={descriptionMaxLength}
                       {...field}
                     />
                   </FormControl>
@@ -449,6 +503,7 @@ export default function MyForm() {
                         value={field.value}
                         onChange={field.onChange}
                         placeholder="Add Tags"
+                        className="w-full"
                       />
                     </FormControl>
                     <p className="text-xs text-muted-foreground mt-1">Optional. Tags added: {field.value.length} / 10</p>
@@ -458,12 +513,39 @@ export default function MyForm() {
               />
             </div>
             
-            <div className="flex justify-center md:justify-end md:w-1/4">
+            <div className="flex justify-center md:justify-end md:w-1/4 mt-4 md:mt-0">
               <Button 
                 type="submit" 
-                className="w-full md:w-auto px-8 mt-1 h-12 text-base font-medium rounded-full shadow-md hover:shadow-lg transition-all"
+                className="w-full md:w-auto px-8 h-12 text-base font-medium rounded-full shadow-md hover:shadow-lg transition-all"
+                disabled={isSubmitting || !hasPhotos}
               >
-                Submit Listing
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg 
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      fill="none" 
+                      viewBox="0 0 24 24"
+                    >
+                      <circle 
+                        className="opacity-25" 
+                        cx="12" 
+                        cy="12" 
+                        r="10" 
+                        stroke="currentColor" 
+                        strokeWidth="4"
+                      />
+                      <path 
+                        className="opacity-75" 
+                        fill="currentColor" 
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Submitting...
+                  </span>
+                ) : (
+                  'Submit Listing'
+                )}
               </Button>
             </div>
           </div>
